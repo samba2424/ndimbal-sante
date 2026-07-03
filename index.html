@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Ndimbal Santé — Votre équipe de médecins IA</title>
+<meta name="description" content="10 médecins spécialistes IA, gratuits, qui parlent et écoutent. Pour rapprocher la santé de chaque village d'Afrique.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0b1512; --surface:#12201b; --surface2:#182b24; --line:#23372f;
+    --gold:#e8b44f; --gold-soft:#f3cf8a; --emerald:#2fbf8f; --emerald-deep:#1a8f68;
+    --text:#f2efe6; --muted:#a8b8ae; --danger:#ff6b5e;
+    --radius:20px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;font-size:16px;line-height:1.6;overflow-x:hidden;-webkit-tap-highlight-color:transparent}
+  button{touch-action:manipulation}
+  h1,h2,h3,.font-display{font-family:'Outfit',sans-serif}
+  ::selection{background:var(--gold);color:#1a1409}
+  @media (prefers-reduced-motion: reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+  .pattern{position:fixed;inset:0;pointer-events:none;opacity:.05;z-index:0;
+    background-image:radial-gradient(var(--gold) 1.2px, transparent 1.2px);background-size:28px 28px}
+  .wrap{max-width:1160px;margin:0 auto;padding:0 24px;position:relative;z-index:1}
+
+  /* ======= nav ======= */
+  nav{position:sticky;top:0;z-index:50;background:rgba(11,21,18,.82);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+  .nav-in{display:flex;align-items:center;justify-content:space-between;height:68px}
+  .logo{display:flex;align-items:center;gap:10px;font-family:'Outfit';font-weight:800;font-size:1.2rem;letter-spacing:.3px}
+  .logo-mark{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,var(--emerald),var(--gold));display:grid;place-items:center;font-size:1.15rem}
+  .nav-links{display:flex;gap:8px;align-items:center}
+  .nav-links a{color:var(--muted);text-decoration:none;font-size:.92rem;font-weight:500;padding:8px 14px;border-radius:10px;transition:.2s}
+  .nav-links a:hover{color:var(--text);background:var(--surface2)}
+  .btn-key{border:1px solid var(--line);background:var(--surface);color:var(--muted);padding:8px 14px;border-radius:10px;cursor:pointer;font-size:.88rem;font-family:'Inter';transition:.2s}
+  .btn-key:hover{border-color:var(--gold);color:var(--gold)}
+  .btn-key.lang{font-weight:700;color:var(--gold-soft)}
+
+  /* ======= hero ======= */
+  header{padding:88px 0 64px;text-align:center;position:relative}
+  .hero-glow{position:absolute;top:-120px;left:50%;transform:translateX(-50%);width:720px;height:480px;
+    background:radial-gradient(ellipse at center,rgba(47,191,143,.16),transparent 65%);pointer-events:none}
+  .badge{display:inline-flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);color:var(--gold-soft);
+    padding:8px 18px;border-radius:999px;font-size:.85rem;font-weight:500;margin-bottom:28px}
+  .badge .dot{width:8px;height:8px;border-radius:50%;background:var(--emerald);box-shadow:0 0 10px var(--emerald);animation:pulse 2s infinite}
+  @keyframes pulse{50%{opacity:.4}}
+  h1{font-size:clamp(2.3rem,5.6vw,4rem);font-weight:800;line-height:1.12;letter-spacing:-.5px;max-width:820px;margin:0 auto}
+  h1 .grad{background:linear-gradient(100deg,var(--gold-soft),var(--gold) 40%,var(--emerald));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .sub{color:var(--muted);font-size:1.13rem;max-width:640px;margin:22px auto 36px}
+  .cta-row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+  .btn{font-family:'Outfit';font-weight:700;font-size:1.02rem;padding:16px 30px;border-radius:16px;border:none;cursor:pointer;transition:.22s;display:inline-flex;align-items:center;gap:10px}
+  .btn-gold{background:linear-gradient(135deg,var(--gold-soft),var(--gold));color:#231803;box-shadow:0 8px 28px rgba(232,180,79,.28)}
+  .btn-gold:hover{transform:translateY(-2px);box-shadow:0 14px 36px rgba(232,180,79,.4)}
+  .btn-ghost{background:var(--surface);color:var(--text);border:1px solid var(--line)}
+  .btn-ghost:hover{border-color:var(--emerald);transform:translateY(-2px)}
+
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:64px auto 0;max-width:860px}
+  .stat{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px 14px;transition:.25s}
+  .stat:hover{border-color:var(--gold);transform:translateY(-3px)}
+  .stat b{display:block;font-family:'Outfit';font-size:1.7rem;color:var(--gold-soft)}
+  .stat span{color:var(--muted);font-size:.85rem}
+
+  /* ======= mission ======= */
+  .mission{background:linear-gradient(135deg,var(--surface),var(--surface2));border:1px solid var(--line);border-radius:26px;
+    padding:38px 40px;margin:70px 0;display:flex;gap:26px;align-items:flex-start;flex-wrap:wrap}
+  .mission .ic{font-size:2.4rem;line-height:1}
+  .mission p{color:var(--muted);max-width:820px}
+  .mission b{color:var(--text)}
+
+  /* ======= team ======= */
+  .section-head{text-align:center;margin:80px 0 44px}
+  .section-head h2{font-size:clamp(1.8rem,3.6vw,2.6rem);font-weight:800}
+  .section-head p{color:var(--muted);margin-top:10px}
+  .team{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:22px;padding-bottom:30px}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:26px;padding:26px;transition:.28s;position:relative;overflow:hidden;cursor:pointer}
+  .card::before{content:'';position:absolute;inset:0;background:radial-gradient(420px 200px at 50% -60px,rgba(232,180,79,.1),transparent);opacity:0;transition:.3s}
+  .card:hover{transform:translateY(-6px);border-color:rgba(232,180,79,.5);box-shadow:0 24px 48px rgba(0,0,0,.4)}
+  .card:hover::before{opacity:1}
+  .card h3{font-size:1.28rem;font-weight:700}
+  .chip{display:inline-block;margin:8px 0 12px;background:rgba(47,191,143,.12);color:var(--emerald);border:1px solid rgba(47,191,143,.3);
+    padding:4px 12px;border-radius:999px;font-size:.78rem;font-weight:600;letter-spacing:.4px;text-transform:uppercase}
+  .card p{color:var(--muted);font-size:.93rem;min-height:66px}
+  .card-actions{display:flex;gap:10px;margin-top:18px}
+  .mini-btn{flex:1;padding:12px;border-radius:13px;border:1px solid var(--line);background:var(--surface2);color:var(--text);
+    font-family:'Outfit';font-weight:600;font-size:.92rem;cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center;gap:8px}
+  .mini-btn:hover{border-color:var(--gold);color:var(--gold-soft)}
+  .mini-btn.primary{background:linear-gradient(135deg,rgba(232,180,79,.92),var(--gold));color:#231803;border:none}
+  .mini-btn.primary:hover{filter:brightness(1.08);color:#231803}
+
+  /* ======= avatars vivants ======= */
+  .avatar{width:96px;height:96px;border-radius:28px;overflow:hidden;margin-bottom:18px;border:2px solid var(--line);
+    background:var(--surface2);position:relative;transition:.3s}
+  .avatar svg,.avatar img{width:100%;height:100%;display:block;object-fit:cover}
+  .avatar img{position:absolute;inset:0;z-index:2}
+  .avatar.living svg,.avatar.living img{animation:breathe 4.5s ease-in-out infinite}
+  @keyframes breathe{0%,100%{transform:scale(1) translateY(0)}50%{transform:scale(1.035) translateY(-1.5px)}}
+  .avatar .eye{transform-origin:center;animation:blink 4.2s infinite}
+  @keyframes blink{0%,94%,100%{transform:scaleY(1)}96.5%{transform:scaleY(.08)}}
+  .avatar.talking{border-color:var(--gold);box-shadow:0 0 0 3px rgba(232,180,79,.35),0 0 26px rgba(232,180,79,.35)}
+  .avatar.talking svg,.avatar.talking img{animation:talkSway 1.15s ease-in-out infinite}
+  @keyframes talkSway{0%,100%{transform:scale(1.03) rotate(-.7deg) translateY(0)}25%{transform:scale(1.045) rotate(.5deg) translateY(-1px)}
+    50%{transform:scale(1.03) rotate(-.3deg) translateY(0)}75%{transform:scale(1.05) rotate(.7deg) translateY(-1.5px)}}
+
+  /* ======= prévention ======= */
+  .prev-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px;padding-bottom:80px}
+  .prev-card{background:linear-gradient(160deg,var(--surface2),var(--surface));border:1px solid var(--line);border-radius:22px;padding:24px;transition:.25s}
+  .prev-card:hover{border-color:var(--emerald);transform:translateY(-4px)}
+  .prev-card .p-ic{font-size:2rem}
+  .prev-card h3{font-size:1.05rem;margin:10px 0 6px}
+  .prev-card p{color:var(--muted);font-size:.88rem;margin-bottom:14px}
+  .prev-card button{width:100%;padding:11px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--gold-soft);
+    font-family:'Outfit';font-weight:600;cursor:pointer;transition:.2s}
+  .prev-card button:hover{border-color:var(--gold)}
+
+  /* ======= chat overlay ======= */
+  .chat-overlay{position:fixed;inset:0;z-index:100;background:rgba(6,12,10,.78);backdrop-filter:blur(8px);display:none;align-items:flex-end;justify-content:center}
+  .chat-overlay.open{display:flex;animation:fadeIn .25s}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  .chat-panel{width:min(680px,100%);height:min(88vh,780px);background:var(--surface);border:1px solid var(--line);border-radius:28px 28px 0 0;
+    display:flex;flex-direction:column;overflow:hidden;animation:slideUp .32s cubic-bezier(.2,.9,.3,1)}
+  @keyframes slideUp{from{transform:translateY(60px);opacity:0}to{transform:translateY(0);opacity:1}}
+  .chat-head{display:flex;align-items:center;gap:14px;padding:14px 18px;border-bottom:1px solid var(--line);background:var(--surface2)}
+  .chat-head .avatar{width:54px;height:54px;border-radius:16px;flex-shrink:0;margin:0}
+  .chat-head h3{font-size:1.02rem}
+  .chat-head .spec{color:var(--emerald);font-size:.78rem;font-weight:600}
+  .speaking-ind{display:none;gap:3px;align-items:flex-end;height:16px;margin-left:6px}
+  .speaking-ind.on{display:inline-flex}
+  .speaking-ind i{width:3px;background:var(--gold);border-radius:2px;animation:eq .8s infinite ease-in-out}
+  .speaking-ind i:nth-child(1){height:6px}.speaking-ind i:nth-child(2){height:14px;animation-delay:.15s}
+  .speaking-ind i:nth-child(3){height:9px;animation-delay:.3s}.speaking-ind i:nth-child(4){height:13px;animation-delay:.45s}
+  @keyframes eq{50%{transform:scaleY(.35)}}
+  .chat-head-actions{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+  .icon-btn{width:44px;height:44px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--text);
+    font-size:1.05rem;cursor:pointer;transition:.2s;display:grid;place-items:center}
+  .icon-btn:hover{border-color:var(--gold)}
+  .icon-btn.off{opacity:.45}
+  .icon-btn.active{border-color:var(--emerald);background:rgba(47,191,143,.14)}
+
+  .chat-msgs{flex:1;overflow-y:auto;padding:22px 20px;display:flex;flex-direction:column;gap:14px}
+  .msg{max-width:82%;padding:14px 18px;border-radius:20px;font-size:.97rem;animation:msgIn .25s}
+  @keyframes msgIn{from{transform:translateY(8px);opacity:0}to{transform:translateY(0);opacity:1}}
+  .msg.bot{background:var(--surface2);border:1px solid var(--line);border-bottom-left-radius:6px;align-self:flex-start}
+  .msg.user{background:linear-gradient(135deg,var(--emerald-deep),var(--emerald));color:#04231a;font-weight:500;border-bottom-right-radius:6px;align-self:flex-end}
+  .msg.alert{background:rgba(255,107,94,.12);border:1px solid rgba(255,107,94,.45);color:#ffd9d5;align-self:flex-start;max-width:92%}
+  .msg.alert b{color:var(--danger)}
+  .msg img.att{max-width:100%;border-radius:12px;display:block;margin-top:8px}
+  .typing{display:inline-flex;gap:5px;padding:16px 18px}
+  .typing i{width:7px;height:7px;border-radius:50%;background:var(--muted);animation:blinkDot 1.2s infinite}
+  .typing i:nth-child(2){animation-delay:.2s}.typing i:nth-child(3){animation-delay:.4s}
+  @keyframes blinkDot{50%{opacity:.25}}
+
+  .chips-row{display:flex;gap:8px;padding:0 20px 12px;flex-wrap:wrap}
+  .s-chip{background:var(--surface2);border:1px solid var(--line);color:var(--text);padding:9px 15px;border-radius:999px;
+    font-size:.87rem;cursor:pointer;transition:.2s;font-family:'Inter'}
+  .s-chip:hover{border-color:var(--emerald);color:var(--emerald)}
+
+  /* ======= micro à états ======= */
+  .listen-banner{display:none;align-items:center;gap:10px;margin:0 18px 10px;padding:10px 16px;border-radius:14px;
+    background:rgba(255,107,94,.1);border:1px solid rgba(255,107,94,.4);color:#ffc9c4;font-size:.9rem}
+  .listen-banner.on{display:flex;animation:msgIn .2s}
+  .listen-banner .rec{width:10px;height:10px;border-radius:50%;background:var(--danger);animation:pulse 1s infinite;flex-shrink:0}
+  .mic-meter{flex:1;height:8px;border-radius:6px;background:rgba(255,255,255,.12);overflow:hidden;min-width:50px}
+  .mic-meter i{display:block;height:100%;width:0%;background:linear-gradient(90deg,var(--gold),var(--danger));border-radius:6px;transition:width .08s linear}
+  .chat-input{display:flex;gap:10px;padding:14px 18px calc(20px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);align-items:center;background:var(--surface2)}
+  .mic-btn{width:60px;height:60px;border-radius:50%;border:none;flex-shrink:0;cursor:pointer;font-size:1.5rem;position:relative;
+    background:linear-gradient(135deg,var(--gold-soft),var(--gold));color:#231803;transition:.25s;box-shadow:0 6px 18px rgba(232,180,79,.3)}
+  .mic-btn:hover{transform:scale(1.06)}
+  .mic-btn.listening{background:linear-gradient(135deg,#ff8d82,var(--danger));color:#fff;animation:micPulse 1.1s infinite}
+  .mic-btn.thinking{background:linear-gradient(135deg,#9aa7b0,#5b6b74);color:#fff;animation:none;cursor:wait}
+  @keyframes micPulse{50%{box-shadow:0 0 0 16px rgba(255,107,94,.16)}}
+  .attach-btn{width:48px;height:48px;border-radius:14px;border:1px solid var(--line);background:var(--surface);color:var(--gold-soft);
+    font-size:1.25rem;cursor:pointer;flex-shrink:0;transition:.2s;display:grid;place-items:center}
+  .attach-btn:hover{border-color:var(--gold)}
+  .attach-btn.has{border-color:var(--emerald);background:rgba(47,191,143,.15)}
+  .chat-input input[type=text]{flex:1;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 18px;
+    color:var(--text);font-size:1rem;font-family:'Inter';outline:none;transition:.2s;min-width:0}
+  .chat-input input[type=text]:focus{border-color:var(--emerald)}
+  .chat-input input.interim{border-color:var(--danger);color:#ffc9c4;font-style:italic}
+  .send-btn{width:54px;height:54px;border-radius:16px;border:none;background:var(--emerald);color:#04231a;font-size:1.25rem;cursor:pointer;transition:.2s;flex-shrink:0}
+  .send-btn:hover{filter:brightness(1.1)}
+
+  /* ======= modals ======= */
+  .modal-bg{position:fixed;inset:0;z-index:200;background:rgba(6,12,10,.85);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:20px}
+  .modal-bg.open{display:flex;animation:fadeIn .25s}
+  .modal{background:var(--surface);border:1px solid var(--line);border-radius:26px;max-width:560px;width:100%;padding:36px;max-height:88vh;overflow-y:auto}
+  .modal h2{font-size:1.5rem;margin-bottom:6px}
+  .modal .m-ic{font-size:2.6rem;margin-bottom:14px;display:block}
+  .modal p{color:var(--muted);font-size:.95rem;margin-bottom:14px}
+  .modal p b{color:var(--gold-soft)}
+  .modal input{width:100%;background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:14px 16px;color:var(--text);font-size:.95rem;outline:none;margin:8px 0 16px}
+  .modal input:focus{border-color:var(--emerald)}
+
+  footer{border-top:1px solid var(--line);padding:44px 0 60px;text-align:center;color:var(--muted);font-size:.88rem}
+  footer b{color:var(--gold-soft)}
+
+  @media(max-width:720px){
+    .stats{grid-template-columns:repeat(2,1fr)}
+    .hide-m{display:none!important}
+    header{padding:56px 0 40px}
+    .mission{padding:28px 22px}
+    .chat-panel{border-radius:22px 22px 0 0;height:94vh;height:94dvh}
+    .chat-head{flex-wrap:wrap;row-gap:8px}
+    .chat-head .spec{display:block}
+    .card p{min-height:auto}
+    .wrap{padding:0 16px}
+    .btn{width:100%;justify-content:center}
+    .chips-row{flex-wrap:nowrap;overflow-x:auto;padding-bottom:14px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+    .chips-row::-webkit-scrollbar{display:none}
+    .s-chip{flex-shrink:0}
+  }
+</style>
+</head>
+<body>
+<div class="pattern"></div>
+
+<nav>
+  <div class="wrap nav-in">
+    <div class="logo"><div class="logo-mark">🩺</div>Ndimbal&nbsp;<span style="color:var(--gold)">Santé</span></div>
+    <div class="nav-links">
+      <a href="#equipe" class="hide-m" data-i="nav_team">L'équipe</a>
+      <a href="#prevention" class="hide-m" data-i="nav_prev">Prévention</a>
+      <button class="btn-key lang" onclick="toggleLang()" id="langBtn">Wolof 🇸🇳</button>
+      <button class="btn-key" onclick="openModal('settingsModal')">⚙️<span class="hide-m">&nbsp;</span><span data-i="nav_ia" class="hide-m">Connexion IA</span></button>
+    </div>
+  </div>
+</nav>
+
+<header>
+  <div class="hero-glow"></div>
+  <div class="wrap">
+    <div class="badge"><span class="dot"></span><span data-i="badge">Disponible 24h/24 · Gratuit · Français & Wolof</span></div>
+    <h1 data-i="title">Dix médecins spécialistes.<br><span class="grad">Une seule mission : vous.</span></h1>
+    <p class="sub" data-i="sub">Là où le premier spécialiste est à 300 km et coûte un mois de revenu, Ndimbal Santé met une équipe médicale IA dans chaque téléphone. Elle <b>parle</b>, elle <b>écoute</b>, elle <b>regarde vos documents médicaux</b> — même si vous ne savez pas lire.</p>
+    <div class="cta-row">
+      <button class="btn btn-gold" onclick="document.getElementById('equipe').scrollIntoView()">👩🏿‍⚕️ <span data-i="cta1">Rencontrer l'équipe</span></button>
+      <button class="btn btn-ghost" onclick="startChat(0,true)">🎤 <span data-i="cta2">Parler à un médecin</span></button>
+    </div>
+    <div class="stats">
+      <div class="stat"><b>10</b><span data-i="st1">spécialistes IA</span></div>
+      <div class="stat"><b>24h/24</b><span data-i="st2">toujours disponibles</span></div>
+      <div class="stat"><b>0 FCFA</b><span data-i="st3">totalement gratuit</span></div>
+      <div class="stat"><b>📷 🔊 🎤</b><span data-i="st4">regarde, parle, écoute</span></div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap" id="mission">
+  <div class="mission">
+    <div class="ic">🤝</div>
+    <div>
+      <h3 style="margin-bottom:8px" data-i="mis_t">Notre promesse éthique</h3>
+      <p data-i="mis_p">Ndimbal Santé <b>ne remplace jamais un vrai soignant</b>. Nos médecins IA écoutent, expliquent, rassurent et surtout <b>orientent</b> : ils détectent les signes de danger et vous disent quand il faut aller <b>immédiatement</b> au poste de santé le plus proche. C'est le pont entre « rien » et « l'hôpital ».</p>
+    </div>
+  </div>
+</div>
+
+<div class="wrap" id="equipe">
+  <div class="section-head">
+    <h2 data-i="team_t">Votre équipe médicale</h2>
+    <p data-i="team_p">Chaque expert peut aussi analyser vos photos : radio, IRM, ordonnance, problème de peau… Cliquez sur un médecin pour lui parler.</p>
+  </div>
+  <div class="team" id="teamGrid"></div>
+</div>
+
+<div class="wrap" id="prevention">
+  <div class="section-head">
+    <h2 data-i="prev_t">📢 Campagnes de prévention</h2>
+    <p data-i="prev_p">Des messages de santé publique à écouter et à partager autour de vous. De nouvelles campagnes arrivent chaque saison.</p>
+  </div>
+  <div class="prev-grid" id="prevGrid"></div>
+</div>
+
+<footer>
+  <div class="wrap">
+    <p><b>⚠️ Important :</b> <span data-i="foot1">Ndimbal Santé donne des informations et une orientation — pas un diagnostic médical. En cas d'urgence, rendez-vous au poste de santé le plus proche.</span></p>
+    <p style="margin-top:12px">
+      <button class="btn-key" onclick="findCenter()">📍 <span data-i="foot_find">Trouver un centre de santé proche</span></button>
+      <button class="btn-key" onclick="shareWA('Découvre Ndimbal Santé : 10 médecins spécialistes IA gratuits qui parlent, écoutent et regardent tes documents médicaux — même si tu ne sais pas lire.')">📤 Partager l'application</button>
+    </p>
+    <p style="margin-top:12px">📞 <b>Urgences Sénégal :</b> SAMU <a href="tel:1515" style="color:var(--gold-soft)">1515</a> · Pompiers <a href="tel:18" style="color:var(--gold-soft)">18</a></p>
+    <p style="margin-top:16px">Ndimbal Santé © 2026 — Un projet de Samba · « Ndimbal » signifie « aide » en wolof 🇸🇳</p>
+  </div>
+</footer>
+
+<!-- ============ CHAT ============ -->
+<div class="chat-overlay" id="chatOverlay">
+  <div class="chat-panel">
+    <div class="chat-head">
+      <div class="avatar living" id="chatAvatar"></div>
+      <div>
+        <h3 id="chatName"></h3>
+        <span class="spec" id="chatSpec"></span>
+        <span class="speaking-ind" id="speakInd"><i></i><i></i><i></i><i></i></span>
+      </div>
+      <div class="chat-head-actions">
+        <button class="icon-btn" id="convoToggle" title="Mode conversation : le micro se rallume après chaque réponse" onclick="toggleConvo()">🔁</button>
+        <button class="icon-btn" id="voiceToggle" title="Activer/couper la voix" onclick="toggleVoice()">🔊</button>
+        <button class="icon-btn" title="Effacer la conversation" onclick="clearConvo()">🗑️</button>
+        <button class="icon-btn" title="Fermer" onclick="closeChat()">✕</button>
+      </div>
+    </div>
+    <div class="chat-msgs" id="chatMsgs"></div>
+    <div class="listen-banner" id="listenBanner"><span class="rec"></span><span data-i="listening">Je vous écoute… parlez maintenant.</span><span class="mic-meter"><i id="micLevel"></i></span></div>
+    <div class="chips-row" id="chipsRow"></div>
+    <div class="chat-input">
+      <button class="mic-btn" id="micBtn" onclick="toggleMic()" title="Appuyez et parlez">🎤</button>
+      <button class="attach-btn" id="attachBtn" onclick="document.getElementById('fileInput').click()" title="Envoyer une photo : radio, IRM, ordonnance, peau…">📷</button>
+      <input type="file" id="fileInput" accept="image/*" style="display:none" onchange="handleFile(this)">
+      <input type="text" id="chatText" placeholder="Écrivez ici… ou appuyez sur le micro" onkeydown="if(event.key==='Enter')sendMsg()">
+      <button class="send-btn" onclick="sendMsg()" title="Envoyer">➤</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ DISCLAIMER ============ -->
+<div class="modal-bg" id="disclaimerModal">
+  <div class="modal">
+    <span class="m-ic">🩺</span>
+    <h2>Bienvenue sur Ndimbal Santé</h2>
+    <p>Nos médecins IA vous <b>informent et vous orientent</b>, mais ne remplacent pas une consultation avec un vrai soignant.</p>
+    <p>🚨 <b>En cas d'urgence</b> (saignement important, difficulté à respirer, convulsions, perte de connaissance) : allez <b>immédiatement</b> au poste de santé le plus proche.</p>
+    <p>🔊 Les médecins <b>parlent à voix haute</b>, 🎤 vous pouvez leur <b>répondre au micro</b>, et 📷 leur <b>montrer une photo</b> (radio, ordonnance, peau…). Pas besoin de savoir lire ou écrire.</p>
+    <button class="btn btn-gold" style="width:100%" onclick="acceptDisclaimer()">J'ai compris, continuer</button>
+  </div>
+</div>
+
+<!-- ============ SETTINGS ============ -->
+<div class="modal-bg" id="settingsModal">
+  <div class="modal">
+    <span class="m-ic">⚙️</span>
+    <h2>Connexion à l'intelligence Claude</h2>
+    <p>Sans clé, l'application marche en <b>mode démonstration</b> (réponses préparées pour les cas fréquents ; l'analyse de photos est désactivée). Avec une clé API Anthropic, chaque médecin devient une <b>vraie IA experte</b> qui comprend toutes vos questions <b>et analyse vos photos médicales</b>.</p>
+    <input type="password" id="apiKeyInput" placeholder="sk-ant-… (votre clé API Anthropic)">
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-gold" style="flex:1" onclick="saveKey()">Enregistrer</button>
+      <button class="btn btn-ghost" style="flex:1" onclick="closeModal('settingsModal')">Fermer</button>
+    </div>
+    <p style="margin-top:14px;font-size:.82rem">Votre clé reste uniquement dans <b>votre</b> navigateur (localStorage). Obtenez-en une sur console.anthropic.com.</p>
+  </div>
+</div>
+
+<script>
+/* ================================================================
+   NDIMBAL SANTÉ v2 — 10 médecins IA · photos réalistes · vision ·
+   micro à états · mode conversation · FR/Wolof · prévention
+   ================================================================ */
+
+/* ---------- Traductions FR / Wolof (interface) ---------- */
+const I18N={
+ fr:{nav_team:"L'équipe",nav_prev:"Prévention",nav_ia:"Connexion IA",
+  badge:"Disponible 24h/24 · Gratuit · Français & Wolof",
+  title:"Dix médecins spécialistes.<br><span class='grad'>Une seule mission : vous.</span>",
+  sub:"Là où le premier spécialiste est à 300 km et coûte un mois de revenu, Ndimbal Santé met une équipe médicale IA dans chaque téléphone. Elle <b>parle</b>, elle <b>écoute</b>, elle <b>regarde vos documents médicaux</b> — même si vous ne savez pas lire.",
+  cta1:"Rencontrer l'équipe",cta2:"Parler à un médecin",
+  st1:"spécialistes IA",st2:"toujours disponibles",st3:"totalement gratuit",st4:"regarde, parle, écoute",
+  mis_t:"Notre promesse éthique",
+  mis_p:"Ndimbal Santé <b>ne remplace jamais un vrai soignant</b>. Nos médecins IA écoutent, expliquent, rassurent et surtout <b>orientent</b> : ils détectent les signes de danger et vous disent quand il faut aller <b>immédiatement</b> au poste de santé le plus proche. C'est le pont entre « rien » et « l'hôpital ».",
+  team_t:"Votre équipe médicale",
+  team_p:"Chaque expert peut aussi analyser vos photos : radio, IRM, ordonnance, problème de peau… Cliquez sur un médecin pour lui parler.",
+  prev_t:"📢 Campagnes de prévention",
+  prev_p:"Des messages de santé publique à écouter et à partager autour de vous. De nouvelles campagnes arrivent chaque saison.",
+  foot1:"Ndimbal Santé donne des informations et une orientation — pas un diagnostic médical. En cas d'urgence, rendez-vous au poste de santé le plus proche.",
+  foot_find:"Trouver un centre de santé proche",
+  listening:"Je vous écoute… parlez maintenant, je m'occupe du reste."},
+ wo:{nav_team:"Ekibu bi",nav_prev:"Fàggu",nav_ia:"Lëkkalekaay IA",
+  badge:"24h/24 · Amul fey · Wolof ak Français",
+  title:"Fukki doktoor yu xarala.<br><span class='grad'>Benn yéene : yow.</span>",
+  sub:"Fu doktoor bi gën a jege nekk 300 km te njëgam tollu ci benn weeru pay, Ndimbal Santé dina indi ekibu doktoor IA ci sa telefon. Dina <b>wax</b>, dina <b>déglu</b>, dina <b>xool say kayitu fajkat</b> — su fekkee sax mënuloo jàng.",
+  cta1:"Gise ekibu bi",cta2:"Waxtaan ak doktoor",
+  st1:"doktoor IA",st2:"fu nekk, kañ nekk",st3:"amul fey dara",st4:"di xool, di wax, di déglu",
+  mis_t:"Sunu dige",
+  mis_p:"Ndimbal Santé <b>du wuutu doktoor bu dëggu mukk</b>. Sunuy doktoor IA dañuy déglu, di leeral, di dalal xel, te lu ëpp solo : dañuy <b>jubbanti</b> — su fekkee am na lu grave, dinañu la wax nga dem <b>léegi léegi</b> ci postu santé bi gën a jege.",
+  team_t:"Sa ekibu doktoor",
+  team_p:"Doktoor bu nekk mën na xool say nataal : radio, IRM, ordonnance, jafe-jafey der… Bësal ci doktoor ngir waxtaan ak moom.",
+  prev_t:"📢 Kampaañ yu fàggu",
+  prev_p:"Ndénkaane yu wér-gi-yaram ngir déglu ak séddoo ak sa gox. Yu bees dinañu ñëw saa su nekk.",
+  foot1:"Ndimbal Santé dina la jox xibaar ak jubbanti — waaye du diagnostic. Su amee lu jamp, demal ci postu santé bi gën a jege.",
+  foot_find:"Wut postu santé bu jege",
+  listening:"Maa ngi lay déglu… waxal léegi, man maa yor li des."}
+};
+let LANG=localStorage.getItem('ndimbal_lang')||'fr';
+function applyLang(){
+  document.querySelectorAll('[data-i]').forEach(el=>{const k=el.getAttribute('data-i');if(I18N[LANG][k])el.innerHTML=I18N[LANG][k];});
+  document.getElementById('langBtn').textContent=LANG==='fr'?'Wolof 🇸🇳':'Français 🇫🇷';
+  document.documentElement.lang=LANG;
+}
+function toggleLang(){LANG=LANG==='fr'?'wo':'fr';localStorage.setItem('ndimbal_lang',LANG);applyLang();}
+
+/* ---------- Générateur d'avatars vectoriels (secours si pas de photo) ---------- */
+function avatarSVG(a){
+  const hairStyles={
+    wrap:`<path d="M25 42 Q26 16 50 15 Q74 16 75 42 L75 30 Q73 10 50 9 Q27 10 25 30 Z" fill="${a.wrapColor}"/>
+          <path d="M24 44 Q22 24 38 15 Q30 26 30 44 Z" fill="${a.wrapColor}"/>
+          <ellipse cx="50" cy="16" rx="26" ry="9" fill="${a.wrapColor}"/>`,
+    bun:`<circle cx="50" cy="12" r="9" fill="${a.hairColor}"/><path d="M27 44 Q26 18 50 16 Q74 18 73 44 L69 40 Q68 24 50 23 Q32 24 31 40 Z" fill="${a.hairColor}"/>`,
+    braids:`<path d="M26 46 Q25 15 50 14 Q75 15 74 46 L70 42 Q70 22 50 21 Q30 22 30 42 Z" fill="${a.hairColor}"/>
+      <path d="M28 40 Q26 58 29 66" stroke="${a.hairColor}" stroke-width="5" fill="none" stroke-linecap="round"/>
+      <path d="M72 40 Q74 58 71 66" stroke="${a.hairColor}" stroke-width="5" fill="none" stroke-linecap="round"/>`,
+    short:`<path d="M28 42 Q27 17 50 16 Q73 17 72 42 L68 38 Q68 25 50 24 Q32 25 32 38 Z" fill="${a.hairColor}"/>`,
+    afro:`<circle cx="38" cy="26" r="12" fill="${a.hairColor}"/><circle cx="62" cy="26" r="12" fill="${a.hairColor}"/><circle cx="50" cy="20" r="13" fill="${a.hairColor}"/><circle cx="30" cy="36" r="9" fill="${a.hairColor}"/><circle cx="70" cy="36" r="9" fill="${a.hairColor}"/>`,
+    bald:``
+  };
+  const glasses = a.glasses?`<g stroke="#233" stroke-width="2" fill="rgba(255,255,255,.14)">
+      <rect x="33" y="40" width="14" height="10" rx="4"/><rect x="53" y="40" width="14" height="10" rx="4"/><line x1="47" y1="44" x2="53" y2="44"/></g>`:``;
+  const earrings = a.earrings?`<circle cx="29" cy="53" r="2.6" fill="${a.wrapColor||'#e8b44f'}"/><circle cx="71" cy="53" r="2.6" fill="${a.wrapColor||'#e8b44f'}"/>`:``;
+  return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <defs><linearGradient id="bg${a.id}" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="${a.bg1}"/><stop offset="1" stop-color="${a.bg2}"/></linearGradient></defs>
+    <rect width="100" height="100" fill="url(#bg${a.id})"/>
+    <path d="M18 100 Q19 76 38 72 L50 78 L62 72 Q81 76 82 100 Z" fill="#f6f4ee"/>
+    <path d="M44 74 L50 96 L56 74 L50 79 Z" fill="${a.shirt}"/>
+    <path d="M38 72 L46 74 L42 84 Z" fill="#e4e1d6"/><path d="M62 72 L54 74 L58 84 Z" fill="#e4e1d6"/>
+    <path d="M42 78 Q44 90 50 91 Q56 90 58 78" stroke="#2a3b34" stroke-width="2.4" fill="none"/>
+    <circle cx="50" cy="92" r="3.4" fill="#e8b44f" stroke="#2a3b34" stroke-width="1.4"/>
+    <rect x="44" y="60" width="12" height="14" rx="5" fill="${a.skin}"/>
+    <ellipse cx="50" cy="44" rx="21" ry="23" fill="${a.skin}"/>
+    <ellipse cx="29" cy="47" rx="3.4" ry="4.6" fill="${a.skin}"/><ellipse cx="71" cy="47" rx="3.4" ry="4.6" fill="${a.skin}"/>
+    ${earrings}
+    <g class="eye"><circle cx="41.5" cy="45" r="2.5" fill="#1c1410"/><circle cx="42.3" cy="44.2" r=".8" fill="#fff"/></g>
+    <g class="eye"><circle cx="58.5" cy="45" r="2.5" fill="#1c1410"/><circle cx="59.3" cy="44.2" r=".8" fill="#fff"/></g>
+    <path d="M36 39 Q41 36.5 46 38.8" stroke="#1c1410" stroke-width="1.7" fill="none" stroke-linecap="round"/>
+    <path d="M54 38.8 Q59 36.5 64 39" stroke="#1c1410" stroke-width="1.7" fill="none" stroke-linecap="round"/>
+    <path d="M50 47 Q48.6 52 50 53.6 Q51.4 52 50 53.6" stroke="${a.skinShade}" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+    <path d="M43 58.5 Q50 63.5 57 58.5" stroke="#7c3b2c" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+    ${hairStyles[a.hair]||''}
+    ${glasses}
+  </svg>`;
+}
+function avatarHTML(d){
+  return `${avatarSVG(d.avatar)}<img src="avatars/${d.id}.webp" alt="Portrait de ${d.name}" loading="lazy" onerror="this.remove()">`;
+}
+
+/* ---------- L'ÉQUIPE DES 10 EXPERTS ---------- */
+const VISION_RULES=" Si l'utilisateur envoie une image (radiographie, IRM, échographie, ordonnance, résultat d'analyse, photo de peau ou autre) : décris calmement ce que tu observes en langage très simple, explique chaque terme médical visible, aide à comprendre — mais rappelle TOUJOURS que seul un professionnel de santé peut interpréter officiellement un examen, ne donne JAMAIS de diagnostic définitif à partir d'une image, et recommande de montrer l'original à un soignant. Si l'image montre un signe inquiétant, dis-le honnêtement et oriente vers une consultation rapide.";
+const WOLOF_RULES=" L'utilisateur a choisi le wolof : réponds en wolof simple (alphabet latin), en expliquant les mots médicaux, avec si besoin les termes français entre parenthèses.";
+
+/* Méthode de consultation commune : ce qui fait qu'un médecin est un vrai médecin */
+const CONSULT_METHOD=" MÉTHODE DE CONSULTATION (à suivre à chaque échange) : 1) Écoute la plainte sans la minimiser. 2) Pose des questions ciblées, UNE ou DEUX à la fois : depuis quand, où exactement, intensité, ce qui aggrave ou soulage, fièvre associée, antécédents importants (diabète, tension, grossesse, drépanocytose), traitements déjà pris (y compris traditionnels — sans juger). 3) Quand tu as assez d'éléments, résume ce que tu as compris en une phrase. 4) Donne ton évaluation PRUDENTE : les causes les plus fréquentes dans le contexte africain, en expliquant ton raisonnement simplement, sans jamais affirmer un diagnostic. 5) Donne des conseils pratiques réalisables avec peu de moyens. 6) Termine TOUJOURS par l'orientation : quoi surveiller, quand consulter, où aller. RÈGLES STRICTES : tu ne recommandes que des produits sans ordonnance (paracétamol, SRO, zinc...) avec les bonnes doses ; JAMAIS d'antibiotique ni de médicament sur ordonnance ; si la question sort de ta spécialité, oriente vers le bon collègue de l'équipe Ndimbal (Dr Diallo généraliste, Dr Ndiaye pédiatre, Dr Bâ gynécologue, Dr Sarr cardiologue, Dr Koné infectiologue, Dr Traoré dermatologue, Dr Diop santé mentale, Dr Touré ophtalmologue, Dr Sow nutritionniste, Dr Fall pharmacien) ; au moindre signe de danger, ordonne d'aller au poste de santé MAINTENANT et donne les gestes d'attente.";
+
+/* Bagage d'expertise spécifique injecté à chaque spécialiste (mode IA) */
+const KNOWLEDGE={
+ 1:" EXPERTISE : protocoles OMS de soins primaires. Tu sais évaluer une fièvre (paludisme, typhoïde, viral), une douleur abdominale (localisation et signes de gravité), des céphalées (drapeaux rouges : brutales, avec fièvre et raideur de nuque, avec déficit), une hypertension ou un diabète de découverte, les plaies et leur suivi. Tu connais les constantes normales (température, pouls, tension, fréquence respiratoire) et sais les expliquer simplement.",
+ 2:" EXPERTISE : protocoles PCIME complets. Respiration rapide : plus de 50/min avant 1 an, plus de 40/min de 1 à 5 ans = pneumonie possible. Déshydratation : plans A, B, C de l'OMS. Paracétamol enfant : 10 à 15 mg par kilo par prise, maximum 4 prises par jour. SRO + zinc 10-14 jours pour toute diarrhée. Calendrier PEV complet et rattrapages. Fièvre chez un bébé de moins de 3 mois = consultation immédiate, toujours.",
+ 3:" EXPERTISE : consultations prénatales selon l'OMS (8 contacts recommandés, minimum 4). Prééclampsie : maux de tête violents + troubles visuels + œdèmes = urgence. Tout saignement pendant la grossesse = consultation le jour même. Hémorragie du post-partum : premier tueur des mères — accoucher en structure de santé. Planification familiale : critères d'éligibilité OMS de chaque méthode. Allaitement : positions, crevasses, engorgement. IST courantes et leur prévention.",
+ 4:" EXPERTISE : cible tensionnelle générale en dessous de 140/90. Sel : moins de 5 g par jour — les cubes d'assaisonnement en sont pleins. Signes FAST de l'AVC (visage, bras, parole, temps = chaque minute compte). Insuffisance cardiaque : essoufflement d'effort puis de repos, œdèmes des jambes, orthopnée. Diabète : soif + urines fréquentes + amaigrissement ; surveillance des pieds. Le traitement antihypertenseur se prend à VIE.",
+ 5:" EXPERTISE : paludisme — TDR obligatoire avant traitement, ACT en première ligne, critères OMS du palu grave (troubles de conscience, convulsions, urines foncées, jaunisse, détresse respiratoire). Tuberculose : toux de plus de 2 semaines = dépistage GRATUIT (GeneXpert), traitement 6 mois sans interruption. VIH : dépistage, traitement qui rend indétectable = intransmissible, zéro stigmatisation. Méningite (ceinture sahélienne) : fièvre + raideur de nuque = urgence absolue. Hépatite B : vaccination. Bilharziose : urines rouges après baignade en eau douce.",
+ 6:" EXPERTISE : gale — démangeaisons nocturnes familiales, traiter toute la famille le même jour. Teigne et mycoses. Pyodermites et impétigo. Eczéma et soins émollients. Distinction cruciale : tache claire insensible au toucher = suspicion de lèpre (traitement gratuit) vs pityriasis versicolor vs vitiligo. Peau albinos : protection solaire vitale, dépister toute plaie qui ne guérit pas (cancer cutané). Dangers précis de la dépigmentation (hydroquinone, corticoïdes, mercure).",
+ 7:" EXPERTISE : dépression — plus de 2 semaines de tristesse avec perte d'intérêt, sommeil et appétit modifiés ; idées suicidaires à rechercher avec douceur et à prendre toujours au sérieux. Épilepsie : maladie neurologique traitable (phénobarbital, carbamazépine — disponibles et peu chers en Afrique), gestes pendant la crise, jamais rien dans la bouche. Premiers secours psychologiques OMS : écouter, relier, protéger. Psychotraumatisme. Addictions : tabac, alcool, tramadol — sans jugement.",
+ 8:" EXPERTISE : cataracte — voile blanc progressif, chirurgie SICS de 20 minutes qui rend la vue, campagnes gratuites régulières. Glaucome : voleur silencieux, dépistage après 40 ans surtout si famille touchée. Trachome et stratégie CHANCE. Conjonctivites : virale (claire, contagieuse), bactérienne (pus), allergique (démangeaisons). Brûlure chimique de l'œil : rincer 15 minutes à l'eau propre immédiatement PUIS hôpital. Baisse brutale de vision = urgence le jour même.",
+ 9:" EXPERTISE : périmètre brachial (MUAC) — moins de 11,5 cm chez l'enfant de 6-59 mois = malnutrition aiguë sévère = centre de santé cette semaine (programmes gratuits, ATPE/Plumpy'Nut). Œdèmes des deux pieds = kwashiorkor = urgence. Bouillies enrichies locales : mil + pâte d'arachide + moringa + huile. Les 1000 premiers jours (conception → 2 ans) décident de tout. Anémie ferriprive : aliments riches en fer + vitamine C, thé hors repas. Index glycémique des plats locaux pour les diabétiques.",
+ 10:" EXPERTISE : lecture d'ordonnance (abréviations : cp = comprimé, gél = gélule, 3x/j = 3 fois par jour, avant/après repas). Génériques = même efficacité, moins cher — toujours les proposer. Posologies OTC usuelles : paracétamol adulte 1 g max 3-4x/j, enfant 10-15 mg/kg. Interactions courantes à signaler (anti-inflammatoires et estomac, etc.). Conservation : chaleur et humidité détruisent les médicaments. Faux médicaments : emballage suspect, prix trop bas, vente hors pharmacie. Tu expliques, tu ne prescris jamais."
+};
+
+const DOCTORS=[
+ {id:1,name:"Dr Aminata Diallo",spec:"Médecine générale · Triage",emoji:"🩺",
+  desc:"Votre premier contact. Elle écoute votre problème, pose les bonnes questions et vous oriente vers le bon spécialiste ou vers l'urgence.",
+  voice:"f", avatar:{id:1,hair:'wrap',wrapColor:'#c96a2b',skin:'#8d5a3b',skinShade:'#6e4128',shirt:'#1a8f68',earrings:true,glasses:false,bg1:'#1f3d33',bg2:'#0e211b'},
+  greeting:"Bonjour, je suis le docteur Aminata Diallo, médecin généraliste. Dites-moi ce qui vous amène : vous pouvez écrire, parler au micro, ou m'envoyer une photo de votre ordonnance ou de vos analyses.",
+  greetingWo:"Salaamaalekum, man maay Doktoor Aminata Diallo. Wax ma lu la metti : mën nga bind, wax ci micro bi, walla yónnee ma nataalu sa ordonnance.",
+  chips:["J'ai de la fièvre","J'ai mal au ventre","Mon enfant est malade","Expliquer mon ordonnance 📷"],
+  system:"Tu es Dr Aminata Diallo, médecin généraliste chaleureuse au sein de Ndimbal Santé, un service d'orientation médicale pour l'Afrique francophone. Ton rôle : écouter, poser 2-3 questions de clarification maximum à la fois, donner des conseils de soins primaires simples, et ORIENTER (vers un des spécialistes de l'équipe ou vers le poste de santé). Phrases courtes et simples (elles seront lues à voix haute à des personnes parfois analphabètes). Jamais de diagnostic définitif ni de prescription. Si signes de danger (convulsions, saignement abondant, difficulté respiratoire, raideur de nuque, inconscience, douleur thoracique, fièvre chez un bébé de moins de 3 mois) : dire d'aller IMMÉDIATEMENT au poste de santé.",
+  demo:[
+   [/fi[eè]vre|chaud|temp[eé]rature/i,"La fièvre est fréquente, mais il faut la surveiller de près. Depuis combien de jours ? Est-ce que la personne frissonne ou vomit ? En zone de paludisme, toute fièvre doit être testée : allez faire un test rapide (TDR) au poste de santé, c'est rapide et souvent gratuit. En attendant : buvez beaucoup d'eau, du paracétamol si disponible, et découvrez la personne. 🚨 Si c'est un bébé de moins de 3 mois, ou s'il y a des convulsions : allez au poste de santé MAINTENANT."],
+   [/ventre|estomac|diarrh/i,"Le mal de ventre a beaucoup de causes. Dites-m'en plus : est-ce qu'il y a de la diarrhée ? Du sang dans les selles ? Des vomissements ? Si c'est de la diarrhée : le plus grand danger est la déshydratation. Préparez une solution : 1 litre d'eau propre + 6 morceaux de sucre + 1 demi-cuillère à café de sel. Buvez souvent, par petites gorgées. 🚨 Si les yeux sont enfoncés, la bouche très sèche, ou la personne trop faible pour boire : poste de santé immédiatement."],
+   [/enfant|b[eé]b[eé]|fils|fille/i,"Je comprends votre inquiétude. Pour un enfant malade, je vous conseille de parler à ma collègue, le docteur Fatou Ndiaye, notre pédiatre : fermez cette fenêtre et choisissez sa carte. Mais d'abord, vérifions les signes de danger : est-ce que l'enfant arrive à boire ? Est-ce qu'il vomit tout ? A-t-il eu des convulsions ? Respire-t-il vite ou difficilement ? Si OUI à un seul de ces signes : allez au poste de santé MAINTENANT, sans attendre."],
+   [/faible|fatigue|[eé]puis/i,"La fatigue peut venir de beaucoup de choses : anémie (manque de fer, très fréquent), paludisme, tension, manque de sommeil ou soucis. Quelques questions : mangez-vous bien ? Avez-vous des vertiges ? Les paupières intérieures sont-elles pâles ? Si oui, c'est peut-être une anémie : notre nutritionniste Dr Khady Sow peut vous aider. Une prise de sang au centre de santé confirmera. Si la fatigue est très forte et soudaine, faites-vous accompagner au poste de santé."]
+  ]},
+ {id:2,name:"Dr Fatou Ndiaye",spec:"Pédiatrie",emoji:"👶",
+  desc:"La santé des enfants de 0 à 15 ans : fièvre, paludisme, diarrhée, vaccins. Elle guide les mamans pas à pas, avec douceur.",
+  voice:"f", avatar:{id:2,hair:'braids',hairColor:'#161210',skin:'#6f4630',skinShade:'#54331f',shirt:'#c96a2b',earrings:true,glasses:false,bg1:'#3d2f1f',bg2:'#211709'},
+  greeting:"Bonjour, je suis le docteur Fatou Ndiaye, pédiatre. Comment va votre enfant ? Décrivez-moi ce que vous observez, ou envoyez-moi une photo de son carnet de santé.",
+  greetingWo:"Salaamaalekum, man maay Doktoor Fatou Ndiaye, doktooru xale. Naka la sa doom di def ? Wax ma li ngay gis.",
+  chips:["Fièvre depuis 2 jours","Il vomit tout","Diarrhée","Photo du carnet 📷"],
+  system:"Tu es Dr Fatou Ndiaye, pédiatre douce et rassurante de Ndimbal Santé (Afrique francophone). Tu suis l'esprit des protocoles PCIME/OMS. Public : des parents souvent inquiets, parfois analphabètes — phrases très simples, ton maternel jamais condescendant. Toujours vérifier les signes de danger PCIME (incapable de boire/téter, vomit tout, convulsions, léthargie, respiration rapide/difficile, fièvre <3 mois) et si présents ordonner d'aller immédiatement au poste de santé. Conseils pratiques réalisables au village (SRO maison, continuer l'allaitement...). Jamais de diagnostic définitif.",
+  demo:[
+   [/fi[eè]vre|chaud/i,"La fièvre chez l'enfant est à prendre au sérieux, surtout en zone de paludisme. D'abord les signes de danger : votre enfant arrive-t-il à boire ou téter ? A-t-il eu des convulsions ? Est-il très endormi, difficile à réveiller ? 🚨 Si OUI à un seul : partez MAINTENANT au poste de santé. Sinon : donnez du paracétamol sirop selon le poids, faites boire souvent, ne couvrez pas trop l'enfant, et allez faire un test de paludisme aujourd'hui ou demain matin au plus tard."],
+   [/vomi/i,"Un enfant qui vomit TOUT ce qu'il boit est en danger de déshydratation : c'est un signe qui demande d'aller au poste de santé rapidement. S'il garde un peu de liquide : donnez de très petites quantités, très souvent — une cuillère à café toutes les 2 à 3 minutes, d'eau propre ou de solution de réhydratation. S'il est allaité, continuez le sein, plus souvent et moins longtemps à chaque fois."],
+   [/diarrh/i,"Pour la diarrhée, l'ennemi numéro 1 c'est la déshydratation, pas la diarrhée elle-même. Préparez la solution maison : 1 litre d'eau propre + 6 morceaux de sucre + une demi-cuillère à café de sel. Donnez après chaque selle. Continuez de nourrir l'enfant normalement, et l'allaitement encore plus. Le zinc en comprimés (au poste de santé) réduit la durée. 🚨 Signes d'alerte : yeux enfoncés, pleurs sans larmes, pli de la peau qui reste, sang dans les selles → poste de santé immédiatement."],
+   [/vaccin|carnet/i,"Excellente question, les vaccins sauvent des millions d'enfants ! Le calendrier de base (PEV) : à la naissance (BCG, polio), à 6, 10 et 14 semaines (penta, polio, pneumo), à 9 mois (rougeole, fièvre jaune). C'est GRATUIT au poste de santé. Si votre enfant a raté des doses, pas de panique : on peut toujours rattraper. Apportez son carnet, même vieux ou abîmé. 📷 Avec la connexion IA activée, vous pouvez me photographier le carnet et je vous dirai où il en est."]
+  ]},
+ {id:3,name:"Dr Mariama Bâ",spec:"Gynécologie · Maternité",emoji:"🤰",
+  desc:"Grossesse, accouchement, planification familiale. Elle accompagne les femmes mois par mois et connaît chaque signe de danger.",
+  voice:"f", avatar:{id:3,hair:'wrap',wrapColor:'#7b3fa0',skin:'#7a4d33',skinShade:'#5d3722',shirt:'#7b3fa0',earrings:true,glasses:false,bg1:'#33203d',bg2:'#170d1f'},
+  greeting:"Bonjour, je suis le docteur Mariama Bâ, gynécologue. Ici, on parle entre nous, sans honte et sans jugement. Comment puis-je vous aider ?",
+  greetingWo:"Salaamaalekum, man maay Doktoor Mariama Bâ. Fii, nu ngi wax ci sutura, amul rus, amul àtte. Nan laa la mëna dimbali ?",
+  chips:["Je suis enceinte","Saignements","Planification familiale","Photo échographie 📷"],
+  system:"Tu es Dr Mariama Bâ, gynécologue-obstétricienne bienveillante de Ndimbal Santé (Afrique francophone). Sujets : grossesse, signes de danger obstétricaux, accouchement, planification familiale, santé intime. Zéro jugement, zéro tabou, grande douceur. Phrases courtes (lues à voix haute). Insister sur les 4 consultations prénatales minimum et l'accouchement dans une structure de santé. Signes de danger grossesse (saignement, maux de tête violents + troubles de la vue, fièvre, perte des eaux avant terme, bébé qui ne bouge plus, convulsions) = poste de santé IMMÉDIATEMENT. Jamais de diagnostic définitif.",
+  demo:[
+   [/enceinte|grossesse/i,"Félicitations, et bravo de chercher des conseils ! Les choses essentielles : 1) Allez à la consultation prénatale (CPN) le plus tôt possible — il en faut au moins 4 pendant la grossesse. 2) Prenez le fer et l'acide folique qu'on vous donnera. 3) Dormez sous moustiquaire, le paludisme est dangereux pour le bébé. 4) Prévoyez d'accoucher dans une structure de santé, jamais seule à la maison. En quel mois êtes-vous ? Je peux vous dire à quoi vous attendre."],
+   [/saign/i,"🚨 Écoutez-moi bien : des saignements pendant la grossesse ne sont JAMAIS normaux. Que ce soit en début ou en fin de grossesse, il faut aller au poste de santé ou à la maternité AUJOURD'HUI, même si ça semble peu, même si ça ne fait pas mal. Faites-vous accompagner, n'y allez pas seule. Si vous n'êtes pas enceinte et que ce sont des règles très abondantes ou hors période, cela mérite aussi une consultation."],
+   [/planification|contracept|espac/i,"C'est une démarche responsable, pour votre santé et celle de vos enfants. Espacer les naissances d'au moins 2 ans protège la maman et le bébé. Les options au centre de santé : pilule, injection (tous les 3 mois, discrète), implant (3 à 5 ans), DIU, préservatifs. Toutes sont réversibles : on peut retomber enceinte à l'arrêt. La sage-femme du centre vous aidera à choisir selon votre situation, en toute confidentialité."],
+   [/douleur|mal/i,"Dites-m'en plus : où avez-vous mal, et depuis quand ? Êtes-vous enceinte ? 🚨 Si vous êtes enceinte et que la douleur est forte au ventre, avec ou sans saignement : maternité immédiatement. Si ce sont des douleurs de règles très fortes qui vous empêchent de vivre normalement, ce n'est pas une fatalité — une consultation peut trouver la cause et vous soulager."]
+  ]},
+ {id:4,name:"Dr Ousmane Sarr",spec:"Cardiologie",emoji:"❤️",
+  desc:"Hypertension, cœur, AVC, diabète. Presque un adulte africain sur deux est hypertendu sans le savoir — il veille sur votre tension.",
+  voice:"m", avatar:{id:4,hair:'short',hairColor:'#1b1512',skin:'#5c3822',skinShade:'#432712',shirt:'#b3402e',earrings:false,glasses:true,bg1:'#3d2222',bg2:'#1c0e0e'},
+  greeting:"Bonjour, je suis le docteur Ousmane Sarr, cardiologue. Tension, cœur, essoufflement : parlons-en. Vous pouvez aussi me montrer en photo vos chiffres de tension ou votre électrocardiogramme.",
+  greetingWo:"Salaamaalekum, man maay Doktoor Ousmane Sarr, doktooru xol. Tension, xol, noyyi bu jafe : nan ci wax.",
+  chips:["Ma tension est haute","Douleur poitrine","Essoufflement","Photo de mon ECG 📷"],
+  system:"Tu es Dr Ousmane Sarr, cardiologue posé et pédagogue de Ndimbal Santé (Afrique francophone). Sujets : hypertension, insuffisance cardiaque, AVC (enseigner les signes FAST simplement), diabète et cœur, hygiène de vie (sel, tabac, activité). Public parfois analphabète : phrases courtes, images concrètes. Douleur thoracique à l'effort ou intense, signes d'AVC (visage qui tombe, bras faible, parole difficile) = urgence IMMÉDIATE, chaque minute compte. Insister : le traitement de la tension se prend À VIE, ne jamais l'arrêter parce qu'on se « sent bien ». Jamais de diagnostic définitif.",
+  demo:[
+   [/tension|hypertension/i,"Vous avez bien fait de m'en parler. La tension élevée ne fait pas mal — c'est ça le piège — mais elle abîme le cœur, les reins et le cerveau en silence. Trois règles d'or : 1) Prenez votre traitement TOUS les jours, à vie, même quand vous vous sentez bien. 2) Réduisez fortement le sel et les cubes d'assaisonnement. 3) Marchez 30 minutes par jour. Faites contrôler votre tension chaque mois au poste de santé. Quel était votre dernier chiffre de tension ?"],
+   [/poitrine|thora/i,"🚨 Attention : une douleur dans la poitrine, surtout si elle serre comme un poids, monte au bras gauche ou à la mâchoire, avec sueurs ou essoufflement, peut être une urgence du cœur. N'attendez pas, ne prenez pas la moto seul : faites-vous emmener au centre de santé ou à l'hôpital MAINTENANT. Si la douleur est brève, en piqûre, liée à un mouvement, c'est souvent musculaire — mais seule une consultation peut trancher. La douleur est-elle là en ce moment ?"],
+   [/essouffl|respir/i,"L'essoufflement mérite qu'on s'y arrête. Questions : êtes-vous essoufflé en marchant à plat, ou seulement en montée ? Vos jambes gonflent-elles ? Dormez-vous avec plusieurs oreillers parce qu'allongé ça étouffe ? Ces signes ensemble peuvent indiquer un cœur fatigué — une consultation avec électrocardiogramme est nécessaire, sans urgence si vous respirez bien au repos. 🚨 Mais si l'essoufflement est soudain et intense au repos : hôpital immédiatement."],
+   [/avc|attaque/i,"Très important, mémorisez ces 3 signes — chaque minute compte pour le cerveau : 1) Le VISAGE : un côté qui tombe quand la personne sourit. 2) Le BRAS : elle ne peut pas lever les deux bras. 3) La PAROLE : elle parle bizarrement ou ne trouve plus ses mots. Un seul de ces signes = AVC possible = hôpital IMMÉDIATEMENT, même si ça passe après quelques minutes. N'attendez pas que « ça se calme », ne donnez rien à boire ni à manger."]
+  ]},
+ {id:5,name:"Dr Ibrahima Koné",spec:"Infectiologie",emoji:"🦟",
+  desc:"Paludisme, tuberculose, VIH, typhoïde, méningite. Les grandes infections d'Afrique n'ont aucun secret pour lui.",
+  voice:"m", avatar:{id:5,hair:'bald',skin:'#4a2c18',skinShade:'#331c0c',shirt:'#1a8f68',earrings:false,glasses:false,bg1:'#1f3d33',bg2:'#0d1f19'},
+  greeting:"Bonjour, je suis le docteur Ibrahima Koné, spécialiste des maladies infectieuses. Fièvre, palu, toux qui dure ? Racontez-moi, ou montrez-moi vos résultats d'analyses en photo.",
+  greetingWo:"Salaamaalekum, man maay Doktoor Ibrahima Koné. Yaram wu tang, sibbiru, sëqët wu yàgg ? Nettali ma.",
+  chips:["Palu : symptômes ?","Toux depuis 3 semaines","Fièvre + maux de tête","Photo de mes analyses 📷"],
+  system:"Tu es Dr Ibrahima Koné, infectiologue direct et rassurant de Ndimbal Santé (Afrique francophone). Sujets : paludisme (toujours recommander le TDR avant traitement), tuberculose (toux >2 semaines = dépistage GRATUIT), VIH (dépistage, vivre avec, zéro stigmatisation), typhoïde, méningite (raideur de nuque + fièvre = urgence absolue), hépatites. Phrases simples, lues à voix haute. Insister sur terminer TOUS les traitements même si on se sent mieux. Jamais de diagnostic définitif.",
+  demo:[
+   [/palu/i,"Le paludisme, notre vieil ennemi. Les signes : fièvre qui monte et descend, frissons, maux de tête, courbatures, parfois vomissements. RÈGLE D'OR : ne jamais se traiter au hasard — faites d'abord le test rapide (TDR) au poste de santé, résultat en 15 minutes. Si positif, on vous donnera le bon traitement (ACT) : prenez TOUTES les doses, même si vous vous sentez mieux au 2ème jour. 🚨 Palu grave = convulsions, urines très foncées, jaunisse, personne confuse ou trop faible : hôpital immédiatement."],
+   [/toux/i,"Une toux qui dure plus de 2 semaines, ce n'est pas une toux ordinaire : il faut penser à la tuberculose. Bonne nouvelle : le dépistage (examen des crachats) et le traitement sont totalement GRATUITS dans les centres de santé. La tuberculose se guérit complètement si on prend les 6 mois de traitement sans interruption. Y a-t-il des sueurs la nuit, une perte de poids, ou du sang dans les crachats ? Ces signes renforcent l'urgence du dépistage."],
+   [/t[eê]te.*fi[eè]vre|fi[eè]vre.*t[eê]te|m[eé]ningite|nuque/i,"🚨 Question très importante : est-ce que la nuque est RAIDE — impossible de plier la tête pour toucher la poitrine avec le menton ? Fièvre + forte douleur de tête + nuque raide (parfois avec vomissements ou gêne à la lumière) = possible MÉNINGITE. C'est une urgence absolue : hôpital IMMÉDIATEMENT, de nuit comme de jour. Si la nuque est souple, il faut quand même tester le paludisme dès aujourd'hui."],
+   [/moustiquaire|pr[eé]ven/i,"La prévention, c'est 80 % de la victoire ! 1) Dormez TOUTES les nuits sous moustiquaire imprégnée — surtout les enfants et les femmes enceintes. 2) Éliminez les eaux stagnantes autour de la maison (vieux pneus, boîtes, canaris ouverts). 3) Femmes enceintes : prenez la prévention (TPI) donnée à la consultation prénatale. Une moustiquaire coûte moins cher qu'un seul épisode de palu — et elle protège 2 à 3 ans."]
+  ]},
+ {id:6,name:"Dr Awa Traoré",spec:"Dermatologie",emoji:"🧴",
+  desc:"Peau, cheveux, plaies. Envoyez-lui une photo de la lésion : elle vous aide à comprendre et vous oriente.",
+  voice:"f", avatar:{id:6,hair:'bun',hairColor:'#241a14',skin:'#9c6a45',skinShade:'#7d4e2d',shirt:'#2b6cb0',earrings:true,glasses:false,bg1:'#1f2f3d',bg2:'#0d1720'},
+  greeting:"Bonjour, je suis le docteur Awa Traoré, dermatologue. Décrivez-moi ce que vous voyez sur la peau — ou mieux : envoyez-moi une photo avec le bouton appareil photo, en pleine lumière.",
+  greetingWo:"Salaamaalekum, man maay Doktoor Awa Traoré, doktooru der. Wax ma li ngay gis ci sa der — walla yónnee ma nataal bu leer.",
+  chips:["Ça gratte partout","Photo de ma peau 📷","Taches sur la peau","Produits éclaircissants"],
+  system:"Tu es Dr Awa Traoré, dermatologue précise et bienveillante de Ndimbal Santé (Afrique francophone). Sujets : gale (démangeaisons nocturnes, traiter toute la famille), teigne, infections cutanées, eczéma, plaies (surtout chez diabétiques), santé de la peau des personnes albinos (protection solaire vitale), dangers de la dépigmentation volontaire (xessal) — en parler sans juger. Pour les photos de peau : décrire la lésion (couleur, bords, relief, étendue), donner les hypothèses FRÉQUENTES en Afrique avec prudence, conseils de soins, et TOUJOURS recommander confirmation par un soignant. Phrases simples. Jamais de diagnostic définitif.",
+  demo:[
+   [/gratte|d[eé]mange/i,"Des démangeaisons, parlons-en. Question clé : est-ce que ça gratte surtout la NUIT, et est-ce que d'autres personnes de la maison se grattent aussi ? Si oui, c'est très probablement la GALE — fréquente, pas honteuse, et bien traitable. Important : il faut traiter TOUTE la famille le même jour, et laver draps et habits à l'eau très chaude ou les enfermer dans un sac 3 jours. Le traitement (lotion ou comprimés) est au centre de santé. Si ça gratte le jour avec des plaques sèches, c'est peut-être un eczéma : évitez les savons agressifs."],
+   [/photo|image/i,"Très bonne idée : en dermatologie, une image vaut mille mots ! Appuyez sur le bouton 📷 à côté du micro et choisissez une photo nette, prise en pleine lumière du jour, assez proche de la lésion. ⚙️ Il faut que la connexion IA soit activée (bouton en haut de la page) pour que je puisse analyser l'image. En attendant, décrivez-moi : la couleur, la taille, depuis quand, et si ça gratte ou fait mal."],
+   [/tache/i,"Les taches sur la peau ont plusieurs causes. Des taches CLAIRES qui grattent peu, souvent chez les jeunes : souvent une mycose bénigne. 🔔 Mais attention : une tache claire où vous ne sentez PLUS rien quand on la touche peut être un début de LÈPRE — elle se soigne très bien et gratuitement, mais il faut consulter vite. Des taches foncées après des boutons, c'est fréquent sur peau noire et ça s'atténue avec le temps : ne mettez pas de produits éclaircissants dessus."],
+   [/[eé]claircis|xessal|d[eé]pigment/i,"Merci d'oser cette question, beaucoup n'en parlent pas. Je vous le dis avec bienveillance : les produits éclaircissants (hydroquinone forte, corticoïdes, mercure) abîment gravement la peau — vergetures irréversibles, infections, acné sévère, plaies qui ne cicatrisent plus, et pour les corticoïdes des dangers pour tout le corps : diabète, hypertension. Votre peau est belle et elle vous protège du soleil. Si vous voulez arrêter, faites-le progressivement, idéalement avec un soignant."]
+  ]},
+ {id:7,name:"Dr Moussa Diop",spec:"Santé mentale",emoji:"🧠",
+  desc:"Dépression, anxiété, épilepsie, traumatismes. Il écoute sans jamais juger — parce que la tête aussi peut être malade, et guérir.",
+  voice:"m", avatar:{id:7,hair:'afro',hairColor:'#1b1512',skin:'#6f4630',skinShade:'#54331f',shirt:'#4a5568',earrings:false,glasses:true,bg1:'#2b2b3d',bg2:'#131320'},
+  greeting:"Bonjour, je suis le docteur Moussa Diop. Ici, on peut tout dire : la tristesse, la peur, les pensées qui tournent. Je vous écoute, sans jugement.",
+  greetingWo:"Salaamaalekum, man maay Doktoor Moussa Diop. Fii, mën nga wax lépp : naqar, tiit, xalaat yuy wër. Maa ngi lay déglu, amul àtte.",
+  chips:["Je suis triste tout le temps","Je n'arrive plus à dormir","Crises d'épilepsie","J'ai trop de soucis"],
+  system:"Tu es Dr Moussa Diop, spécialiste en santé mentale de Ndimbal Santé (Afrique francophone), profondément humain et chaleureux. Sujets : dépression, anxiété, insomnie, épilepsie (c'est une maladie du cerveau qui se TRAITE, pas une possession — déstigmatiser avec respect des croyances), psychotraumatisme, addictions. Écoute active, valider les émotions, techniques simples (respiration, parole, lien social). Si idées suicidaires : prendre très au sérieux, dire à la personne d'en parler immédiatement à un proche de confiance et un soignant, ne jamais rester seule. Phrases courtes et douces. Jamais de diagnostic définitif.",
+  demo:[
+   [/triste|d[eé]prim|pleur/i,"Merci de me le confier — dire « je suis triste », c'est déjà un acte de courage. Si la tristesse est là presque tous les jours depuis plus de 2 semaines, avec perte de goût pour ce qu'on aimait, sommeil abîmé, fatigue : cela peut être une dépression. Ce n'est PAS une faiblesse ni un manque de foi — c'est une maladie qui se soigne. Trois premiers pas : 1) Parlez-en à UNE personne de confiance. 2) Sortez marcher chaque jour, même 15 minutes. 3) Si des pensées de mort vous traversent, dites-le à un soignant AUJOURD'HUI — vous comptez, et de l'aide existe."],
+   [/dormir|insomnie|sommeil/i,"Le sommeil qui fuit, c'est épuisant. Souvent, ce sont les soucis qui tournent dans la tête. Essayons ceci dès ce soir : 1) Pas de thé, café ou cola après 16h. 2) Une heure avant de dormir, posez le téléphone. 3) Allongé, respirez lentement : inspirez sur 4 temps, soufflez sur 6, pendant 5 minutes. 4) Si les pensées tournent, levez-vous, notez-les ou dites-les à voix basse, puis recouchez-vous. Si malgré tout l'insomnie dure des semaines, parlons-en plus profondément — elle a une cause, on la trouvera."],
+   [/[eé]pilep|crise|convuls/i,"Je veux d'abord vous dire une chose importante : l'épilepsie est une maladie du CERVEAU, comme le diabète est une maladie du sang. Ce n'est ni un mauvais sort, ni une possession, et ce n'est pas contagieux. Avec un traitement quotidien (souvent peu coûteux), la majorité des personnes n'ont PLUS de crises. Pendant une crise : allongez la personne sur le côté, protégez sa tête, ne mettez RIEN dans sa bouche, ne l'attachez pas, restez près d'elle. 🚨 Si la crise dure plus de 5 minutes ou se répète : hôpital immédiatement. Ensuite : consultation pour commencer un traitement."],
+   [/souci|stress|angoiss|peur/i,"Les soucis qui s'accumulent, ça peut serrer la poitrine, couper le sommeil, rendre irritable — c'est le corps qui dit « trop, c'est trop ». Technique immédiate quand ça monte : posez une main sur le ventre, inspirez lentement par le nez en gonflant le ventre, soufflez longuement par la bouche. Dix fois. Ensuite : les soucis pèsent moins quand on les partage — qui, autour de vous, pourrait écouter sans juger ? Parler n'est pas une faiblesse. Et si l'angoisse vous empêche de vivre, un soignant peut vraiment vous aider."]
+  ]},
+ {id:8,name:"Dr Aïcha Touré",spec:"Ophtalmologie",emoji:"👁️",
+  desc:"Yeux et vision : cataracte, glaucome, conjonctivite. La 1ère cause de cécité en Afrique s'opère en 20 minutes — elle vous le dira.",
+  voice:"f", avatar:{id:8,hair:'wrap',wrapColor:'#1a8f68',skin:'#8d5a3b',skinShade:'#6e4128',shirt:'#1a8f68',earrings:true,glasses:true,bg1:'#1f3d33',bg2:'#0e211b'},
+  greeting:"Bonjour, je suis le docteur Aïcha Touré, ophtalmologue. Vos yeux sont précieux. Dites-moi ce qui vous gêne — vous pouvez aussi m'envoyer une photo de l'œil concerné, prise en pleine lumière.",
+  greetingWo:"Salaamaalekum, man maay Doktoor Aïcha Touré, doktooru bët. Say bët dañu am solo lool. Wax ma lu lay gëna jaaxal.",
+  chips:["Vision qui baisse","Œil rouge","Photo de mon œil 📷","Grand-parent presque aveugle"],
+  system:"Tu es Dr Aïcha Touré, ophtalmologue claire et rassurante de Ndimbal Santé (Afrique francophone). Sujets : cataracte (voile blanc, opération courte qui rend la vue — beaucoup de campagnes gratuites), glaucome (voleur silencieux de la vue, dépistage après 40 ans), conjonctivites, trachome, corps étrangers, baisse de vision. Pour les photos d'yeux : décrire ce qui est visible (rougeur, reflet blanc pupillaire, paupières) avec prudence et orienter. 🚨 Urgences : douleur oculaire intense + baisse de vision brutale, projection de produit chimique (rincer à grande eau 15 min puis hôpital), traumatisme. Phrases simples. Jamais de diagnostic définitif.",
+  demo:[
+   [/baisse|flou|voir/i,"Une vision qui baisse n'est jamais à ignorer, mais il y a souvent de bonnes nouvelles. Question : est-ce comme un VOILE ou un brouillard qui s'installe lentement, surtout chez une personne âgée ? C'est probablement une CATARACTE — et elle s'OPÈRE : 20 minutes d'intervention, et la vue revient. Des campagnes gratuites passent régulièrement, renseignez-vous au centre de santé. Si la baisse est BRUTALE (en quelques heures ou jours) : c'est une urgence, consultez immédiatement."],
+   [/rouge/i,"Un œil rouge, voyons cela. S'il gratte, larmoie, colle le matin, sans forte douleur : probablement une conjonctivite — lavez à l'eau propre bouillie refroidie, ne frottez pas, lavez-vous les mains souvent (c'est contagieux), et consultez si pas mieux en 2-3 jours. 🚨 MAIS si l'œil rouge est très DOULOUREUX, avec vision baissée, ou gêne forte à la lumière : urgence ophtalmologique, consultez le jour même. Et si un produit a giclé dans l'œil : rincez à grande eau pendant 15 minutes, tout de suite, puis hôpital."],
+   [/aveugle|grand|[aâ]g[eé]/i,"Ne perdez pas espoir : en Afrique, la première cause de cécité chez les personnes âgées est la CATARACTE — et elle est réversible ! Si l'œil de votre grand-parent montre un reflet blanc ou gris dans la pupille et que la vue a baissé lentement, une simple opération de 20 minutes peut lui rendre la vue. Des ONG organisent des campagnes d'opérations gratuites dans les régions. Demandez au centre de santé quand passe la prochaine caravane ophtalmologique."],
+   [/photo|image/i,"Bonne idée ! Prenez la photo en pleine lumière du jour, l'œil bien ouvert, le plus net possible — une photo de face et une de côté si vous pouvez. Appuyez sur le bouton 📷 à côté du micro. ⚙️ La connexion IA doit être activée pour l'analyse. En attendant, dites-moi : depuis quand, y a-t-il douleur, et la vision a-t-elle changé ?"]
+  ]},
+ {id:9,name:"Dr Khady Sow",spec:"Nutrition",emoji:"🥗",
+  desc:"Malnutrition, anémie, alimentation des enfants et des mamans. Ses menus utilisent le mil, le niébé, le moringa — ce qu'on a au village.",
+  voice:"f", avatar:{id:9,hair:'braids',hairColor:'#161210',skin:'#9c6a45',skinShade:'#7d4e2d',shirt:'#c96a2b',earrings:true,glasses:false,bg1:'#3d331f',bg2:'#201a0c'},
+  greeting:"Bonjour, je suis le docteur Khady Sow, nutritionniste. Bien manger, ce n'est pas manger cher — c'est manger malin. Que puis-je pour vous ?",
+  greetingWo:"Salaamaalekum, man maay Doktoor Khady Sow. Lekk bu baax du lekk bu seer — lekk bu am xel la. Nan laa la mëna dimbali ?",
+  chips:["Mon enfant est maigre","Repas de bébé 6 mois","Anémie / fatigue","Femme enceinte : quoi manger ?"],
+  system:"Tu es Dr Khady Sow, nutritionniste pratique et positive de Ndimbal Santé (Afrique francophone). Sujets : malnutrition infantile (repérer MAS/MAM : maigreur visible, œdèmes des pieds = URGENCE), anémie, alimentation 0-2 ans (allaitement exclusif 6 mois, diversification), femme enceinte, diabète. Utiliser les aliments LOCAUX et accessibles : mil, sorgho, niébé, arachide, moringa, feuilles locales, petits poissons séchés, œufs, fruits de saison. Recettes concrètes de bouillies enrichies. Si photo d'un enfant : évaluer avec grande prudence (maigreur visible, œdèmes) et orienter vers pesée au centre de santé. Phrases simples. Jamais de diagnostic définitif.",
+  demo:[
+   [/maigre|malnutri|poids/i,"Vous avez bien fait de m'en parler tôt. Deux vérifications d'abord : 1) Est-ce que ses PIEDS sont gonflés (la peau garde la marque du doigt) ? 2) Est-ce que ses bras sont très fins ? 🚨 Pieds gonflés ou maigreur extrême = allez au centre de santé cette semaine : il existe des programmes GRATUITS avec des aliments thérapeutiques. Sinon, enrichissons ses repas : à chaque bouillie de mil, ajoutez 1 cuillère de pâte d'arachide + 1 cuillère de poudre de feuilles de moringa séchées + un peu d'huile. Trois repas + 2 collations par jour. Revenez me dire dans 2 semaines."],
+   [/b[eé]b[eé]|6 mois|bouillie/i,"À 6 mois, grande étape : on continue le sein ET on commence les repas ! La règle d'or de la bouillie enrichie : farine de mil ou riz + UNE cuillère de pâte d'arachide ou de niébé écrasé + UNE cuillère d'huile + si possible poisson séché pilé ou œuf. Une bouillie claire comme de l'eau ne nourrit pas : elle doit être épaisse, tenir sur la cuillère. Commencez par 2-3 cuillères 2 fois par jour, augmentez chaque semaine. Continuez le sein jusqu'à 2 ans : c'est le meilleur vaccin naturel."],
+   [/an[eé]mie|fatigue|fer/i,"L'anémie (manque de fer) est très fréquente, surtout chez les femmes et les enfants. Signes : fatigue, vertiges, paupières intérieures et paumes PÂLES. Les aliments qui redonnent du fer, disponibles au marché : foie (le champion !), viande, petits poissons entiers séchés, niébé, lentilles, feuilles vert foncé (moringa, feuilles de patate). ASTUCE : ajoutez du citron ou des fruits au repas — la vitamine C multiplie l'absorption du fer. Évitez le thé PENDANT les repas, il bloque le fer. Si les vertiges sont forts : prise de sang au centre de santé, et fer en comprimés."],
+   [/enceinte/i,"Bien manger enceinte, c'est nourrir deux personnes avec intelligence ! Chaque jour, visez : 1) Un aliment de FORCE (mil, riz, maïs) à chaque repas. 2) Un aliment de CONSTRUCTION (poisson, œuf, niébé, arachide) au moins 2 fois. 3) Des feuilles vertes et un fruit. 4) Le fer + acide folique de la consultation prénatale, TOUS les jours. 5) Sel iodé uniquement, en petite quantité. Écoutez votre corps : mangez plus souvent en petites quantités si les nausées gênent. Et buvez beaucoup d'eau propre."]
+  ]},
+ {id:10,name:"Dr Cheikh Fall",spec:"Pharmacie",emoji:"💊",
+  desc:"Photographiez votre ordonnance : il la traduit en mots simples. Dosages, interactions, et chasse aux faux médicaments.",
+  voice:"m", avatar:{id:10,hair:'short',hairColor:'#1b1512',skin:'#7a4d33',skinShade:'#5d3722',shirt:'#2b6cb0',earrings:false,glasses:false,bg1:'#1f2f3d',bg2:'#0c161f'},
+  greeting:"Bonjour, je suis le docteur Cheikh Fall, pharmacien. Le plus simple : photographiez votre ordonnance avec le bouton appareil photo, et je vous l'explique médicament par médicament, en mots simples.",
+  greetingWo:"Salaamaalekum, man maay Doktoor Cheikh Fall, farmasiyeŋ. Li gën a yomb : nataalal sa ordonnance ci butoŋ 📷 bi, ma leeral la ko benn benn, ci baat yu yomb.",
+  chips:["Photo de mon ordonnance 📷","Médicaments de la rue","J'ai oublié une dose","Antibiotiques : règles ?"],
+  system:"Tu es Dr Cheikh Fall, pharmacien rigoureux et accessible de Ndimbal Santé (Afrique francophone). Sujets : expliquer les ordonnances en mots très simples (si photo d'ordonnance : lister chaque médicament lisible, expliquer à quoi il sert, la dose écrite, le moment de prise, la durée ; si illisible, le dire honnêtement), bon usage, interactions courantes, dangers des médicaments de rue/faux médicaments (1 sur 10 falsifié dans les pays à faible revenu — OMS), résistance aux antibiotiques (toujours FINIR le traitement), conservation. Tu ne prescris JAMAIS : tu expliques ce qui a été prescrit. Phrases courtes. Si doute : pharmacie agréée.",
+  demo:[
+   [/ordonnance|photo/i,"Avec plaisir, c'est exactement mon rôle. Appuyez sur le bouton 📷 à côté du micro et photographiez l'ordonnance bien à plat, en pleine lumière, écriture lisible. ⚙️ La connexion IA doit être activée (bouton en haut de la page) pour que je puisse la lire. Sinon, dictez-moi ou écrivez le nom du médicament et les chiffres à côté : je vous expliquerai à quoi il sert, combien en prendre, à quel moment, et pendant combien de jours."],
+   [/rue|march[eé]|faux/i,"Je dois être très direct avec vous, parce que c'est grave : les médicaments vendus par terre au marché ou au bord de la route sont dangereux. Selon l'OMS, environ 1 médicament sur 10 en circulation dans nos pays est FALSIFIÉ : pas de produit actif, mauvaise dose, ou substances toxiques. Ils ont voyagé au soleil, ce qui détruit même les vrais. Résultat : la maladie s'aggrave pendant qu'on croit se soigner. Oui, la pharmacie coûte plus cher — mais les génériques y sont abordables : demandez toujours « le générique », c'est le même médicament, moins cher."],
+   [/oubli/i,"Bonne question, ça arrive à tout le monde. La règle générale : si vous vous en rendez compte peu après l'heure prévue, prenez la dose oubliée. Si c'est presque l'heure de la dose SUIVANTE, sautez celle oubliée et reprenez le rythme normal. SURTOUT : ne prenez JAMAIS une double dose pour « rattraper » — c'est dangereux. Pour ne plus oublier : associez la prise à un geste quotidien (prière du matin, repas du soir) ou demandez à quelqu'un de vous le rappeler. Quel médicament aviez-vous oublié ? Certains ont des règles particulières."],
+   [/antibio/i,"Les antibiotiques, parlons-en, c'est un enjeu mondial. Les 4 règles : 1) JAMAIS d'antibiotique sans l'avis d'un soignant — ils ne servent à RIEN contre les virus (rhume, grippe, la plupart des toux). 2) Si prescrit : TERMINER toute la boîte, même guéri au 3ème jour — sinon les bactéries survivantes deviennent résistantes. 3) Ne jamais donner « son reste » d'antibiotique à quelqu'un d'autre. 4) Ne jamais en acheter au marché. La résistance aux antibiotiques tue déjà : un jour, mal utilisés, ils ne marcheront plus pour vos enfants."]
+  ]}
+];
+
+/* ---------- Campagnes de prévention ---------- */
+const CAMPAIGNS=[
+ {ic:"🦟",t:"Saison des pluies = saison du palu",p:"Dormez sous moustiquaire imprégnée toutes les nuits, éliminez les eaux stagnantes, et testez toute fièvre au poste de santé.",
+  audio:"Message de prévention de Ndimbal Santé. La saison des pluies est là, et avec elle le paludisme. Trois gestes qui sauvent : dormez toutes les nuits sous une moustiquaire imprégnée, surtout les enfants et les femmes enceintes. Videz les eaux stagnantes autour de votre maison. Et si quelqu'un a de la fièvre, faites le test rapide au poste de santé avant tout traitement. Le paludisme se soigne très bien quand on agit vite. Partagez ce message autour de vous."},
+ {ic:"💉",t:"Vaccins : le bouclier de vos enfants",p:"BCG à la naissance, penta à 6-10-14 semaines, rougeole à 9 mois. Gratuit au poste de santé, rattrapage toujours possible.",
+  audio:"Message de prévention de Ndimbal Santé. Les vaccins protègent vos enfants contre des maladies graves : rougeole, polio, coqueluche, méningite. Ils sont gratuits au poste de santé. À la naissance, à six, dix et quatorze semaines, puis à neuf mois. Si votre enfant a raté des doses, ce n'est pas trop tard : on peut toujours rattraper. Apportez le carnet, même abîmé. Un enfant vacciné est un enfant protégé."},
+ {ic:"🩸",t:"Connaissez-vous votre tension ?",p:"Près d'un adulte sur deux est hypertendu sans le savoir. Un contrôle gratuit par mois peut éviter un AVC.",
+  audio:"Message de prévention de Ndimbal Santé. L'hypertension ne fait pas mal, mais elle abîme le cœur et le cerveau en silence. Près d'un adulte sur deux est concerné sans le savoir. Faites contrôler votre tension une fois par mois au poste de santé, c'est rapide et souvent gratuit. Réduisez le sel et les cubes, marchez chaque jour. Et si un traitement vous a été donné, prenez-le tous les jours, à vie, même quand vous vous sentez bien."},
+ {ic:"🫧",t:"L'eau propre sauve des vies",p:"Lavez les mains au savon, buvez de l'eau traitée ou bouillie, protégez les aliments des mouches : stop diarrhées et choléra.",
+  audio:"Message de prévention de Ndimbal Santé. Les diarrhées et le choléra passent par l'eau sale et les mains sales. Quatre gestes simples : lavez-vous les mains au savon avant de manger et après les toilettes. Buvez de l'eau traitée, bouillie ou en sachet sûr. Couvrez les aliments pour les protéger des mouches. Et si quelqu'un a une diarrhée très liquide et abondante, comme de l'eau de riz, allez immédiatement au poste de santé, c'est peut-être le choléra."}
+];
+
+/* ---------- Signes de danger universels ---------- */
+const RED_FLAGS=[
+  {re:/convuls|crise.*tremb|tremble.*conscience/i, msg:"des convulsions"},
+  {re:/(ne|pas).*(respire|respirer)|[eé]touff|difficile.*respir|respir.*difficile/i, msg:"une difficulté à respirer"},
+  {re:/saigne beaucoup|h[eé]morragie|beaucoup de sang|sang.*abondant/i, msg:"un saignement abondant"},
+  {re:/inconscien|ne se r[eé]veille|[eé]vanoui/i, msg:"une perte de connaissance"},
+  {re:/avale.*produit|bu.*produit|empoisonn|avale.*m[eé]dicament/i, msg:"une possible intoxication"}
+];
+const RED_ALERT="🚨 <b>URGENCE — Écoutez-moi bien.</b> Ce que vous décrivez ({X}) est un signe de danger grave. Il faut aller au poste de santé, au centre de santé ou à l'hôpital le plus proche <b>MAINTENANT</b>, sans attendre. Faites-vous accompagner. Si la personne est inconsciente, allongez-la sur le côté. Ne donnez rien à boire ni à manger. Partez tout de suite — chaque minute compte.<br><br>📞 <b>Numéros d'urgence au Sénégal :</b> SAMU <a href='tel:1515' style='color:#ffd9d5'>1515</a> · Pompiers <a href='tel:18' style='color:#ffd9d5'>18</a>";
+
+/* ---------- Rendu équipe + campagnes ---------- */
+const grid=document.getElementById('teamGrid');
+DOCTORS.forEach((d,i)=>{
+  const c=document.createElement('div');c.className='card';
+  c.innerHTML=`<div class="avatar living">${avatarHTML(d)}</div>
+    <h3>${d.name}</h3><span class="chip">${d.emoji} ${d.spec}</span>
+    <p>${d.desc}</p>
+    <div class="card-actions">
+      <button class="mini-btn primary" onclick="event.stopPropagation();startChat(${i},true)">🎤 Parler</button>
+      <button class="mini-btn" onclick="event.stopPropagation();startChat(${i})">💬 Consulter</button>
+    </div>`;
+  c.onclick=()=>startChat(i);
+  grid.appendChild(c);
+});
+const pg=document.getElementById('prevGrid');
+CAMPAIGNS.forEach((c,i)=>{
+  const el=document.createElement('div');el.className='prev-card';
+  el.innerHTML=`<div class="p-ic">${c.ic}</div><h3>${c.t}</h3><p>${c.p}</p>
+    <div style="display:flex;gap:8px">
+      <button style="flex:2" onclick="playCampaign(${i},this)">🔊 Écouter</button>
+      <button style="flex:1" onclick="shareWA(CAMPAIGNS[${i}].audio)" title="Partager sur WhatsApp">📤 Partager</button>
+    </div>`;
+  pg.appendChild(el);
+});
+/* Partage WhatsApp — l'outil de diffusion n°1 en Afrique de l'Ouest */
+function shareWA(text){
+  window.open('https://wa.me/?text='+encodeURIComponent(text+'\n\n— Partagé depuis Ndimbal Santé 🩺, votre équipe de médecins IA gratuite.'),'_blank');
+}
+function playCampaign(i,btn){
+  if(speechSynthesis.speaking){speechSynthesis.cancel();document.querySelectorAll('.prev-card button').forEach(b=>b.textContent='🔊 Écouter le message');return;}
+  const u=new SpeechSynthesisUtterance(CAMPAIGNS[i].audio);
+  u.lang='fr-FR';if(frVoice)u.voice=frVoice;u.rate=.95;
+  btn.textContent='⏸️ Arrêter';
+  u.onend=()=>btn.textContent='🔊 Écouter le message';u.onerror=u.onend;
+  speechSynthesis.speak(u);
+}
+
+/* ---------- État ---------- */
+let current=null, voiceOn=true, autoConvo=false, history=[], recognizing=false, recog=null, pendingImage=null;
+
+/* ---------- Synthèse vocale : voix assortie au SEXE et à l'ÂGE de chaque médecin ---------- */
+let frVoice=null, voicesFR={f:[],m:[]};
+const AGE ={1:40,2:32,3:45,4:52,5:45,6:38,7:40,8:36,9:34,10:35};
+const VIDX={1:0,2:1,3:2,6:3,8:4,9:5, 4:0,5:1,7:2,10:3}; /* index dans le groupe de voix de son sexe */
+const F_NAMES=/denise|hortense|julie|[eé]loise|charline|caroline|vivienne|yvette|virginie|audrey|c[eé]line|am[eé]lie|sylvie|jacqueline|margaux|female|femme/i;
+const M_NAMES=/henri|paul|claude|guillaume|thierry|antoine|j[eé]r[oô]me|r[eé]my|nicolas|mathieu|alain|fabrice|maurice|male(?!female)|homme/i;
+function pickVoice(){
+  const vs=speechSynthesis.getVoices().filter(v=>v.lang.toLowerCase().startsWith('fr'));
+  /* les voix "naturelles/neurales" (Edge, Chrome) d'abord : bien meilleure qualité */
+  const score=v=>(/natural|neural/i.test(v.name)?8:0)+(/online/i.test(v.name)?2:0)+(/google/i.test(v.name)?4:0)+(/microsoft/i.test(v.name)?1:0);
+  const sorted=[...vs].sort((a,b)=>score(b)-score(a));
+  voicesFR.f=sorted.filter(v=>F_NAMES.test(v.name)&&!M_NAMES.test(v.name));
+  voicesFR.m=sorted.filter(v=>M_NAMES.test(v.name));
+  frVoice=sorted[0]||null;
+}
+if('speechSynthesis' in window){pickVoice();speechSynthesis.onvoiceschanged=pickVoice;}
+function speak(text,doc,onDone){
+  if(!voiceOn||!('speechSynthesis' in window)){if(onDone)onDone();return;}
+  speechSynthesis.cancel();
+  const clean=text.replace(/<[^>]+>/g,'').replace(/[🚨🔔💊🥗👁️🧠🦟❤️🤰👶🩺🎤💬⚠️✅📷⚙️📍📤📞]/g,'');
+  const u=new SpeechSynthesisUtterance(clean);
+  u.lang='fr-FR';
+  const g=doc&&doc.voice==='m'?'m':'f', age=doc?(AGE[doc.id]||40):40;
+  const pool=voicesFR[g];
+  let matched=false;
+  if(pool.length){u.voice=pool[(VIDX[doc.id]||0)%pool.length];matched=true;}
+  else if(frVoice){u.voice=frVoice;}
+  /* si la voix correspond déjà au sexe : réglage léger ; sinon on force le timbre */
+  let pitch = matched ? (g==='f'?1.02:0.96) : (g==='f'?1.15:0.8);
+  let rate  = .95;
+  if(age>=50){pitch-=.06;rate=.88;}      /* voix plus grave et posée pour les aînés */
+  else if(age<=35){pitch+=.05;rate=.99;} /* voix plus claire et vive pour les jeunes */
+  u.pitch=Math.max(.5,Math.min(2,pitch));u.rate=rate;
+  const ind=document.getElementById('speakInd'),av=document.getElementById('chatAvatar');
+  u.onstart=()=>{ind.classList.add('on');av.classList.add('talking');};
+  const end=()=>{ind.classList.remove('on');av.classList.remove('talking');if(onDone)onDone();};
+  u.onend=end;u.onerror=end;
+  speechSynthesis.speak(u);
+}
+
+/* ---------- Reconnaissance vocale (micro à états + vu-mètre + envoi garanti) ---------- */
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+const IS_EDGE=navigator.userAgent.includes('Edg/');
+let micGranted=false, meterStream=null, meterCtx=null, meterRAF=null, meterMax=0;
+if(SR){
+  recog=new SR();recog.lang='fr-FR';recog.interimResults=true;recog.maxAlternatives=1;
+  recog.onresult=e=>{
+    let final='',interim='';
+    for(const r of e.results){if(r.isFinal)final+=r[0].transcript;else interim+=r[0].transcript;}
+    const inp=document.getElementById('chatText');
+    if(interim&&!final){inp.value=interim;inp.classList.add('interim');}
+    if(final){inp.value=final;inp.classList.remove('interim');stopMicUI();try{recog.abort();}catch(_){ }sendMsg();}
+  };
+  recog.onend=()=>{
+    /* GARANTIE : si on a entendu quelque chose mais que le "final" n'est jamais venu, on l'envoie quand même */
+    const inp=document.getElementById('chatText');
+    const heard=inp.classList.contains('interim')&&inp.value.trim().length>1;
+    stopMicUI();
+    if(heard){inp.classList.remove('interim');sendMsg();}
+  };
+  recog.onerror=e=>{
+    const err=e.error;
+    stopMicUI();
+    if(err==='not-allowed'||err==='service-not-allowed'){
+      addMsg('bot',"🎤 Le navigateur bloque le micro. Cliquez sur l'icône 🔒 (ou ⓘ) à gauche de la barre d'adresse, autorisez le <b>Microphone</b>, puis réessayez.");
+    }else if(err==='network'){
+      addMsg('bot',"🎤 La reconnaissance vocale n'arrive pas à joindre internet."+(IS_EDGE?" Sur <b>Microsoft Edge</b>, elle est parfois indisponible : essayez avec <b>Google Chrome</b>, ça règle le problème dans la plupart des cas.":" Vérifiez votre connexion et réessayez."));
+    }else if(err==='audio-capture'){
+      addMsg('bot',"🎤 Aucun microphone détecté sur cet appareil. Branchez ou activez un micro, puis réessayez.");
+    }else if(err==='no-speech'){
+      if(meterMax<0.015){
+        addMsg('bot',"🎤 Je n'ai capté <b>aucun son</b> : votre micro semble coupé. Vérifiez : la touche « muet » du casque, puis Windows → Paramètres → Système → Son → vérifiez que le bon micro est choisi et que son volume n'est pas à zéro. La petite barre rouge doit bouger quand vous parlez.");
+      }else{
+        addMsg('bot',"🎤 Je vous ai entendu, mais je n'ai pas reconnu de mots. Parlez un peu plus fort, plus près et plus lentement, puis réessayez.");
+      }
+    }
+  };
+}
+function stopMeter(){
+  if(meterRAF){cancelAnimationFrame(meterRAF);meterRAF=null;}
+  if(meterStream){meterStream.getTracks().forEach(t=>t.stop());meterStream=null;}
+  if(meterCtx){meterCtx.close().catch(()=>{});meterCtx=null;}
+  const lv=document.getElementById('micLevel');if(lv)lv.style.width='0%';
+}
+function stopMicUI(){recognizing=false;stopMeter();
+  document.getElementById('micBtn').classList.remove('listening');
+  document.getElementById('listenBanner').classList.remove('on');}
+async function startMic(){
+  if(!recog||recognizing)return;
+  speechSynthesis.cancel();
+  if(location.protocol==='file:'){
+    addMsg('bot',"🎤 Le micro est bloqué quand on ouvre le fichier directement. Lancez le petit serveur (<b>node ndimbal-serve.js</b>) puis ouvrez <b>http://localhost:3007</b> — ou utilisez la version en ligne. Le reste de l'application marche normalement.");
+    return;
+  }
+  /* permission + vu-mètre : la barre bouge = le son entre vraiment */
+  if(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia){
+    try{
+      meterStream=await navigator.mediaDevices.getUserMedia({audio:true});
+      micGranted=true;meterMax=0;
+      meterCtx=new (window.AudioContext||window.webkitAudioContext)();
+      const srcNode=meterCtx.createMediaStreamSource(meterStream);
+      const an=meterCtx.createAnalyser();an.fftSize=512;srcNode.connect(an);
+      const buf=new Uint8Array(an.fftSize);
+      const loop=()=>{
+        an.getByteTimeDomainData(buf);
+        let s=0;for(let i=0;i<buf.length;i++){const d=(buf[i]-128)/128;s+=d*d;}
+        const rms=Math.sqrt(s/buf.length);
+        if(rms>meterMax)meterMax=rms;
+        const lv=document.getElementById('micLevel');
+        if(lv)lv.style.width=Math.min(100,Math.round(rms*420))+'%';
+        meterRAF=requestAnimationFrame(loop);
+      };
+      loop();
+    }catch(err){
+      stopMeter();
+      addMsg('bot',"🎤 Le micro est bloqué. Cliquez sur l'icône 🔒 à gauche de la barre d'adresse, choisissez <b>Autoriser le microphone</b>, puis appuyez à nouveau sur le bouton micro.");
+      return;
+    }
+  }
+  recognizing=true;
+  document.getElementById('micBtn').classList.add('listening');
+  document.getElementById('listenBanner').classList.add('on');
+  try{recog.start();}catch(e){stopMicUI();}
+}
+function toggleMic(){
+  if(!recog){addMsg('bot',"Le micro n'est pas disponible sur ce navigateur. Utilisez <b>Google Chrome</b> — ou écrivez votre question, je vous répondrai pareil.");return;}
+  if(recognizing){try{recog.stop();}catch(_){ }stopMicUI();return;}
+  startMic();
+}
+function toggleConvo(){
+  autoConvo=!autoConvo;
+  document.getElementById('convoToggle').classList.toggle('active',autoConvo);
+  if(autoConvo)addMsg('bot',"🔁 Mode conversation activé : après chaque réponse, je rallume le micro pour vous écouter. Parlez, je m'occupe du reste.");
+}
+
+/* ---------- Chat ---------- */
+function histKey(){return 'ndimbal_hist_'+current.id;}
+function startChat(i,withVoice){
+  current=DOCTORS[i];history=[];pendingImage=null;
+  document.getElementById('attachBtn').classList.remove('has');
+  document.getElementById('chatAvatar').innerHTML=avatarHTML(current);
+  document.getElementById('chatName').textContent=current.name;
+  document.getElementById('chatSpec').textContent=current.spec;
+  document.getElementById('chatMsgs').innerHTML='';
+  const chips=document.getElementById('chipsRow');chips.innerHTML='';
+  current.chips.forEach(c=>{const b=document.createElement('button');b.className='s-chip';b.textContent=c;
+    b.onclick=()=>{document.getElementById('chatText').value=c.replace(' 📷','');sendMsg();};chips.appendChild(b);});
+  document.getElementById('chatOverlay').classList.add('open');
+  /* restaurer la conversation précédente */
+  const saved=JSON.parse(localStorage.getItem(histKey())||'[]');
+  if(saved.length){
+    saved.forEach(m=>addMsg(m.role==='user'?'user':(m.alert?'alert':'bot'),m.html,false));
+    history=saved.map(m=>({role:m.role,content:m.text}));
+    addMsg('bot',"— Nous reprenons là où nous nous étions arrêtés. —",false);
+  }
+  const greet=LANG==='wo'&&current.greetingWo?current.greetingWo:current.greeting;
+  addMsg('bot',greet);
+  speak(greet,current,()=>{if((withVoice||autoConvo)&&recog)startMic();});
+}
+function closeChat(){document.getElementById('chatOverlay').classList.remove('open');speechSynthesis.cancel();if(recognizing){recog.abort();stopMicUI();}}
+function clearConvo(){localStorage.removeItem(histKey());history=[];document.getElementById('chatMsgs').innerHTML='';
+  const greet=LANG==='wo'&&current.greetingWo?current.greetingWo:current.greeting;addMsg('bot',greet);}
+function toggleVoice(){voiceOn=!voiceOn;const b=document.getElementById('voiceToggle');
+  b.textContent=voiceOn?'🔊':'🔇';b.classList.toggle('off',!voiceOn);if(!voiceOn)speechSynthesis.cancel();}
+
+function addMsg(who,html,save=true){
+  const m=document.createElement('div');m.className='msg '+who;m.innerHTML=html;
+  document.getElementById('chatMsgs').appendChild(m);
+  m.scrollIntoView({behavior:'smooth',block:'end'});
+  return m;
+}
+function persist(role,text,html,alert){
+  if(!current)return;
+  const saved=JSON.parse(localStorage.getItem(histKey())||'[]');
+  saved.push({role,text,html,alert:!!alert});
+  localStorage.setItem(histKey(),JSON.stringify(saved.slice(-24)));
+}
+function showTyping(){const t=document.createElement('div');t.className='msg bot typing';t.id='typing';
+  t.innerHTML='<i></i><i></i><i></i>';document.getElementById('chatMsgs').appendChild(t);
+  t.scrollIntoView({behavior:'smooth'});
+  document.getElementById('micBtn').classList.add('thinking');}
+function hideTyping(){const t=document.getElementById('typing');if(t)t.remove();
+  document.getElementById('micBtn').classList.remove('thinking');}
+
+/* ---------- Upload photo (radio, IRM, ordonnance, peau…) ---------- */
+function handleFile(input){
+  const f=input.files[0];if(!f)return;
+  const img=new Image();
+  img.onload=()=>{
+    const max=1200,scale=Math.min(1,max/Math.max(img.width,img.height));
+    const cv=document.createElement('canvas');
+    cv.width=Math.round(img.width*scale);cv.height=Math.round(img.height*scale);
+    cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height);
+    pendingImage=cv.toDataURL('image/jpeg',.85).split(',')[1];
+    document.getElementById('attachBtn').classList.add('has');
+    addMsg('user',`📷 Photo prête à envoyer :<img class="att" src="data:image/jpeg;base64,${pendingImage}" alt="photo envoyée">`);
+    addMsg('bot',"J'ai bien reçu votre photo. Ajoutez un mot d'explication si vous voulez (ex : « c'est mon ordonnance », « c'est sur mon bras depuis 2 semaines »), puis envoyez.");
+    URL.revokeObjectURL(img.src);
+  };
+  img.src=URL.createObjectURL(f);
+  input.value='';
+}
+
+async function sendMsg(){
+  const inp=document.getElementById('chatText');const text=inp.value.trim();
+  if((!text&&!pendingImage)||!current)return;
+  inp.value='';inp.classList.remove('interim');
+  if(text){addMsg('user',escapeHTML(text));persist('user',text,escapeHTML(text));}
+  const img=pendingImage;pendingImage=null;
+  document.getElementById('attachBtn').classList.remove('has');
+  history.push({role:'user',content:img?'[Photo envoyée] '+text:text||'[Photo envoyée]'});
+
+  /* 1. signes de danger — priorité absolue */
+  if(text)for(const f of RED_FLAGS){
+    if(f.re.test(text)){
+      const alert=RED_ALERT.replace('{X}',f.msg);
+      addMsg('alert',alert);persist('assistant',alert.replace(/<[^>]+>/g,''),alert,true);
+      speak(alert,current);
+      history.push({role:'assistant',content:alert.replace(/<[^>]+>/g,'')});
+      return;
+    }
+  }
+  /* 2. Claude API si clé, sinon moteur démo */
+  const key=localStorage.getItem('ndimbal_api_key');
+  showTyping();
+  let reply;
+  if(key){
+    try{reply=await askClaude(key,text,img);}
+    catch(e){reply="(Connexion à l'IA impossible : "+escapeHTML(e.message)+" — je passe en mode démonstration.)<br><br>"+demoReply(text||'photo');}
+  }else if(img){
+    await new Promise(r=>setTimeout(r,600));
+    reply="J'aimerais beaucoup analyser votre photo, mais l'analyse d'images demande la <b>connexion IA</b>. Demandez à la personne qui gère l'application d'activer la clé (bouton ⚙️ en haut de la page). En attendant, décrivez-moi ce que vous voyez avec vos mots, je vous aiderai autrement.";
+  }else{
+    await new Promise(r=>setTimeout(r,700+Math.random()*600));
+    reply=demoReply(text);
+  }
+  hideTyping();
+  addMsg('bot',reply);persist('assistant',reply.replace(/<[^>]+>/g,''),reply);
+  history.push({role:'assistant',content:reply.replace(/<[^>]+>/g,'')});
+  speak(reply,current,()=>{if(autoConvo&&recog)startMic();});
+}
+
+function demoReply(text){
+  for(const [re,rep] of current.demo){if(re.test(text))return rep;}
+  const fallbacks=[
+   "Je vous écoute. Pour bien vous aider, donnez-moi un détail de plus : depuis quand cela dure-t-il, et est-ce que cela s'aggrave ?",
+   "Merci pour votre confiance. En mode démonstration, je connais surtout les cas les plus fréquents — essayez les boutons de suggestion ci-dessus, ou reformulez avec des mots simples. Et si vous êtes inquiet : le poste de santé reste votre meilleur allié.",
+   "Je comprends. Dites-m'en un peu plus : est-ce que cela concerne un adulte ou un enfant ? Depuis combien de temps ? Y a-t-il de la fièvre ?"
+  ];
+  return fallbacks[Math.floor(Math.random()*fallbacks.length)];
+}
+
+/* ---------- Connexion Claude API (texte + vision) ---------- */
+async function askClaude(key,text,imgB64){
+  const msgs=history.slice(0,-1).slice(-10).map(m=>({role:m.role,content:m.content}));
+  let userContent;
+  if(imgB64){
+    userContent=[{type:'image',source:{type:'base64',media_type:'image/jpeg',data:imgB64}},
+                 {type:'text',text:text||"Voici ma photo. Peux-tu m'aider à la comprendre ?"}];
+  }else{userContent=text;}
+  msgs.push({role:'user',content:userContent});
+  const res=await fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','x-api-key':key,
+      'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+    body:JSON.stringify({model:'claude-sonnet-5',max_tokens:800,
+      system:current.system+(KNOWLEDGE[current.id]||'')+CONSULT_METHOD+VISION_RULES+(LANG==='wo'?WOLOF_RULES:" Réponds en français simple.")+" Réponds en 4 à 8 phrases courtes maximum (ta réponse sera lue à voix haute). Termine par une question ou un conseil d'action clair.",
+      messages:msgs})
+  });
+  if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e.error?.message||('erreur '+res.status));}
+  const data=await res.json();
+  return escapeHTML(data.content[0].text).replace(/\n/g,'<br>');
+}
+
+function escapeHTML(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+
+/* ---------- Trouver un centre de santé ---------- */
+function findCenter(){
+  window.open('https://www.google.com/maps/search/'+encodeURIComponent('poste de santé OR centre de santé OR hôpital'),'_blank');
+}
+
+/* ---------- Modals ---------- */
+function openModal(id){document.getElementById(id).classList.add('open');
+  if(id==='settingsModal'){const k=localStorage.getItem('ndimbal_api_key');if(k)document.getElementById('apiKeyInput').value=k;}}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+function saveKey(){const v=document.getElementById('apiKeyInput').value.trim();
+  if(v)localStorage.setItem('ndimbal_api_key',v);else localStorage.removeItem('ndimbal_api_key');
+  closeModal('settingsModal');}
+function acceptDisclaimer(){localStorage.setItem('ndimbal_disclaimer','1');closeModal('disclaimerModal');}
+if(!localStorage.getItem('ndimbal_disclaimer'))openModal('disclaimerModal');
+applyLang();
+</script>
+</body>
+</html>
