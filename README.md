@@ -1,5 +1,11 @@
 # 🩺 NDIMBAL SANTÉ — Guide de Samba
 
+## 🌍 L'application est EN LIGNE !
+**Lien à partager avec n'importe qui :** https://samba2424.github.io/ndimbal-sante/
+(hébergée gratuitement sur ton compte GitHub `samba2424`, dépôt `ndimbal-sante` — le micro y fonctionne car le site est en https)
+
+Pour publier une mise à jour : `git add -A && git commit -m "maj" && git push` depuis le dossier — le site se met à jour en ~1 minute.
+
 ## C'est quoi ?
 Ton agence de **10 médecins spécialistes IA** pour l'Afrique. Ils parlent à voix haute 🔊 et écoutent au micro 🎤 — conçus pour être utiles même aux personnes qui ne savent pas lire.
 
