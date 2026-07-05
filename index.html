@@ -196,6 +196,15 @@
   .modal label{font-size:.82rem;color:var(--muted);font-weight:600}
   .pf-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
   @media(max-width:520px){.pf-grid{grid-template-columns:1fr}}
+  .pf-card{background:linear-gradient(160deg,var(--surface2),var(--surface));border:1px solid var(--gold);border-radius:18px;padding:20px 22px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+  .pf-head{display:flex;gap:14px;align-items:center;margin-bottom:12px}
+  .pf-avatar{width:58px;height:58px;border-radius:50%;background:linear-gradient(135deg,var(--gold-soft),var(--gold));color:#231803;display:grid;place-items:center;font-family:'Outfit';font-weight:800;font-size:1.35rem;flex-shrink:0}
+  .pf-name{font-family:'Outfit';font-weight:700;font-size:1.18rem;color:var(--text)}
+  .pf-sub{color:var(--muted);font-size:.85rem}
+  .pf-row{display:flex;justify-content:space-between;gap:14px;padding:8px 0;border-top:1px solid var(--line);font-size:.9rem;color:var(--text)}
+  .pf-row b{color:var(--muted);font-weight:600;flex-shrink:0}
+  .pf-row span{text-align:right;word-break:break-word}
+  .pf-foot{margin-top:12px;text-align:center;color:var(--gold-soft);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;font-weight:700}
   .gov-band{background:linear-gradient(135deg,var(--surface),var(--surface2));border:1px solid var(--line);border-left:4px solid var(--gold);
     border-radius:18px;padding:20px 24px;margin-bottom:24px;font-size:.92rem;color:var(--muted)}
   .gov-band b{color:var(--text)}
@@ -369,24 +378,42 @@
   <div class="modal">
     <span class="m-ic">👤</span>
     <h2>Mon profil santé</h2>
-    <p>Ces informations restent dans <b>votre téléphone</b> et aident les médecins à personnaliser leurs conseils (doses selon l'âge et le poids, prudence si grossesse ou maladie chronique). Tout est facultatif.</p>
-    <div class="pf-grid">
-      <div><label>Prénom</label><input id="pf_name" placeholder="Ex : Awa"></div>
-      <div><label>Âge (années)</label><input id="pf_age" type="number" min="0" max="120" inputmode="numeric" placeholder="Ex : 34"></div>
-      <div><label>Sexe</label><select id="pf_sex"><option value="">—</option><option>Femme</option><option>Homme</option></select></div>
-      <div><label>Poids (kg)</label><input id="pf_weight" type="number" min="1" max="300" inputmode="numeric" placeholder="Ex : 65"></div>
-      <div><label>Grossesse en cours ?</label><select id="pf_preg"><option value="">—</option><option>Oui</option><option>Non</option><option>Ne sait pas</option></select></div>
-      <div><label>Village / Région</label><input id="pf_region" placeholder="Ex : Kolda"></div>
+
+    <!-- VUE : la Carte Santé (affichée quand le profil existe) -->
+    <div id="pfView" style="display:none">
+      <div class="pf-card" id="pfCard"></div>
+      <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap">
+        <button class="btn btn-gold" style="flex:1;min-width:130px" onclick="editProfile()">✏️ Modifier</button>
+        <button class="btn btn-ghost" style="flex:1;min-width:130px" onclick="shareProfile()">📤 Partager</button>
+        <button class="btn btn-ghost" style="flex:1;min-width:110px" onclick="closeModal('profileModal')">Fermer</button>
+      </div>
     </div>
-    <label>Maladies connues (tension, diabète, drépanocytose, asthme…)</label>
-    <input id="pf_chronic" placeholder="Ex : hypertension depuis 2023">
-    <label>Allergies (médicaments, aliments…)</label>
-    <input id="pf_allergy" placeholder="Ex : allergie à la pénicilline">
-    <label>Médicaments pris en ce moment</label>
-    <input id="pf_meds" placeholder="Ex : amlodipine 5 mg chaque matin">
-    <div style="display:flex;gap:10px;margin-top:6px">
-      <button class="btn btn-gold" style="flex:1" onclick="saveProfile()">Enregistrer</button>
-      <button class="btn btn-ghost" style="flex:1" onclick="closeModal('profileModal')">Fermer</button>
+
+    <!-- FORMULAIRE : création / modification -->
+    <div id="pfForm">
+      <p>Ces informations restent dans <b>votre téléphone</b> et aident les médecins à personnaliser leurs conseils (doses selon l'âge et le poids, prudence si grossesse ou maladie chronique). Tout est facultatif.</p>
+      <div class="pf-grid">
+        <div><label>Prénom</label><input id="pf_name" placeholder="Ex : Awa"></div>
+        <div><label>Nom</label><input id="pf_lastname" placeholder="Ex : Diallo"></div>
+        <div><label>Âge (années)</label><input id="pf_age" type="number" min="0" max="120" inputmode="numeric" placeholder="Ex : 34"></div>
+        <div><label>Sexe</label><select id="pf_sex"><option value="">—</option><option>Femme</option><option>Homme</option></select></div>
+        <div><label>Poids (kg)</label><input id="pf_weight" type="number" min="1" max="300" inputmode="numeric" placeholder="Ex : 65"></div>
+        <div><label>Grossesse en cours ?</label><select id="pf_preg"><option value="">—</option><option>Oui</option><option>Non</option><option>Ne sait pas</option></select></div>
+        <div><label>Téléphone</label><input id="pf_phone" type="tel" inputmode="tel" placeholder="Ex : 77 123 45 67"></div>
+        <div><label>Village / Région</label><input id="pf_region" placeholder="Ex : Kolda"></div>
+      </div>
+      <label>Adresse (quartier, rue, repère…)</label>
+      <input id="pf_address" placeholder="Ex : quartier Sikilo, près de la grande mosquée">
+      <label>Maladies connues (tension, diabète, drépanocytose, asthme…)</label>
+      <input id="pf_chronic" placeholder="Ex : hypertension depuis 2023">
+      <label>Allergies (médicaments, aliments…)</label>
+      <input id="pf_allergy" placeholder="Ex : allergie à la pénicilline">
+      <label>Médicaments pris en ce moment</label>
+      <input id="pf_meds" placeholder="Ex : amlodipine 5 mg chaque matin">
+      <div style="display:flex;gap:10px;margin-top:6px">
+        <button class="btn btn-gold" style="flex:1" onclick="saveProfile()">💾 Créer ma carte santé</button>
+        <button class="btn btn-ghost" style="flex:1" onclick="closeModal('profileModal')">Fermer</button>
+      </div>
     </div>
   </div>
 </div>
@@ -1165,9 +1192,12 @@ function caregiverSummary(){
   if(!current)return;
   const p=loadProfile();
   const pf=[];
-  if(p.name)pf.push("Prénom : "+p.name);if(p.age)pf.push("Âge : "+p.age+" ans");
+  const fullN=((p.name||'')+' '+(p.lastname||'')).trim();
+  if(fullN)pf.push("Nom : "+fullN);if(p.age)pf.push("Âge : "+p.age+" ans");
   if(p.sex)pf.push("Sexe : "+p.sex);if(p.weight)pf.push("Poids : "+p.weight+" kg");
-  if(p.preg)pf.push("Grossesse : "+p.preg);if(p.region)pf.push("Lieu : "+p.region);
+  if(p.preg)pf.push("Grossesse : "+p.preg);
+  if(p.address||p.region)pf.push("Adresse : "+[p.address,p.region].filter(Boolean).join(', '));
+  if(p.phone)pf.push("Téléphone : "+p.phone);
   if(p.chronic)pf.push("Maladies connues : "+p.chronic);if(p.allergy)pf.push("Allergies : "+p.allergy);
   if(p.meds)pf.push("Médicaments : "+p.meds);
   let s="RÉSUMÉ DE CONSULTATION — NDIMBAL SANTÉ\n(à montrer à un professionnel de santé)\n";
@@ -1199,27 +1229,64 @@ function getApiKey(){
 }
 
 /* ---------- Profil santé du patient (stocké UNIQUEMENT dans le téléphone) ---------- */
-const PF_FIELDS=['name','age','sex','weight','preg','region','chronic','allergy','meds'];
+const PF_FIELDS=['name','lastname','age','sex','weight','preg','phone','region','address','chronic','allergy','meds'];
 function loadProfile(){try{return JSON.parse(localStorage.getItem('ndimbal_profile')||'{}');}catch(e){return{};}}
 function openProfile(){
   const p=loadProfile();
   PF_FIELDS.forEach(f=>{const el=document.getElementById('pf_'+f);if(el)el.value=p[f]||'';});
+  if(Object.keys(p).length){renderPfCard(p);pfShow('view');}else{pfShow('form');}
   openModal('profileModal');
 }
+function pfShow(mode){
+  document.getElementById('pfView').style.display=mode==='view'?'block':'none';
+  document.getElementById('pfForm').style.display=mode==='form'?'block':'none';
+}
+function editProfile(){pfShow('form');}
 function saveProfile(){
   const p={};
   PF_FIELDS.forEach(f=>{const el=document.getElementById('pf_'+f);if(el&&el.value.trim())p[f]=el.value.trim();});
   localStorage.setItem('ndimbal_profile',JSON.stringify(p));
-  closeModal('profileModal');
+  if(Object.keys(p).length){renderPfCard(p);pfShow('view');showToast("✅ Votre carte santé est créée. Les médecins l'utiliseront à chaque consultation.");}
+  else{closeModal('profileModal');}
+}
+function renderPfCard(p){
+  const fullName=((p.name||'')+' '+(p.lastname||'')).trim()||'Profil sans nom';
+  const init=((p.name?p.name[0]:'')+(p.lastname?p.lastname[0]:'')).toUpperCase();
+  const sub=[p.age?p.age+' ans':null,p.sex||null,p.weight?p.weight+' kg':null].filter(Boolean).join(' · ');
+  const row=(label,val)=>val?`<div class="pf-row"><b>${label}</b><span>${escapeHTML(val)}</span></div>`:'';
+  document.getElementById('pfCard').innerHTML=
+    `<div class="pf-head"><div class="pf-avatar">${init||'👤'}</div>
+      <div><div class="pf-name">${escapeHTML(fullName)}</div><div class="pf-sub">${sub||'informations à compléter'}</div></div></div>`
+    +row('📍 Adresse',[p.address,p.region].filter(Boolean).join(', '))
+    +row('📞 Téléphone',p.phone)
+    +row('🤰 Grossesse',p.preg)
+    +row('🩺 Maladies connues',p.chronic)
+    +row('⚠️ Allergies',p.allergy)
+    +row('💊 Médicaments',p.meds)
+    +`<div class="pf-foot">Carte Santé · Ndimbal Santé</div>`;
+}
+function shareProfile(){
+  const p=loadProfile();
+  let s="CARTE SANTÉ — NDIMBAL SANTÉ\n";
+  s+="Nom : "+(((p.name||'')+' '+(p.lastname||'')).trim()||'—')+"\n";
+  if(p.age)s+="Âge : "+p.age+" ans\n";if(p.sex)s+="Sexe : "+p.sex+"\n";if(p.weight)s+="Poids : "+p.weight+" kg\n";
+  if(p.preg)s+="Grossesse : "+p.preg+"\n";
+  if(p.address||p.region)s+="Adresse : "+[p.address,p.region].filter(Boolean).join(', ')+"\n";
+  if(p.phone)s+="Téléphone : "+p.phone+"\n";
+  if(p.chronic)s+="Maladies connues : "+p.chronic+"\n";
+  if(p.allergy)s+="Allergies : "+p.allergy+"\n";
+  if(p.meds)s+="Médicaments : "+p.meds+"\n";
+  shareWA(s);
 }
 function profileText(){
   const p=loadProfile();const parts=[];
-  if(p.name)parts.push('prénom : '+p.name);
+  const full=((p.name||'')+' '+(p.lastname||'')).trim();
+  if(full)parts.push('nom : '+full);
   if(p.age)parts.push('âge : '+p.age+' ans');
   if(p.sex)parts.push('sexe : '+p.sex);
   if(p.weight)parts.push('poids : '+p.weight+' kg');
   if(p.preg)parts.push('grossesse en cours : '+p.preg);
-  if(p.region)parts.push('lieu : '+p.region);
+  if(p.address||p.region)parts.push('lieu : '+[p.address,p.region].filter(Boolean).join(', '));
   if(p.chronic)parts.push('maladies connues : '+p.chronic);
   if(p.allergy)parts.push('allergies : '+p.allergy);
   if(p.meds)parts.push('médicaments actuels : '+p.meds);
