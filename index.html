@@ -7,6 +7,7 @@
 <meta name="description" content="10 médecins spécialistes IA, gratuits, qui parlent et écoutent. Pour rapprocher la santé de chaque village d'Afrique.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="config.js"></script>
 <style>
   :root{
     --bg:#0b1512; --surface:#12201b; --surface2:#182b24; --line:#23372f;
@@ -189,8 +190,17 @@
   .modal .m-ic{font-size:2.6rem;margin-bottom:14px;display:block}
   .modal p{color:var(--muted);font-size:.95rem;margin-bottom:14px}
   .modal p b{color:var(--gold-soft)}
-  .modal input{width:100%;background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:14px 16px;color:var(--text);font-size:.95rem;outline:none;margin:8px 0 16px}
-  .modal input:focus{border-color:var(--emerald)}
+  .modal input,.modal select,.modal textarea{width:100%;background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:14px 16px;color:var(--text);font-size:.95rem;outline:none;margin:6px 0 12px;font-family:'Inter'}
+  .modal input:focus,.modal select:focus,.modal textarea:focus{border-color:var(--emerald)}
+  .modal label{font-size:.82rem;color:var(--muted);font-weight:600}
+  .pf-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
+  @media(max-width:520px){.pf-grid{grid-template-columns:1fr}}
+  .gov-band{background:linear-gradient(135deg,var(--surface),var(--surface2));border:1px solid var(--line);border-left:4px solid var(--gold);
+    border-radius:18px;padding:20px 24px;margin-bottom:24px;font-size:.92rem;color:var(--muted)}
+  .gov-band b{color:var(--text)}
+  .gov-band .gov-links{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+  .gov-band a{color:var(--gold-soft);text-decoration:none;border:1px solid var(--line);padding:8px 14px;border-radius:10px;font-size:.85rem;transition:.2s}
+  .gov-band a:hover{border-color:var(--gold)}
 
   footer{border-top:1px solid var(--line);padding:44px 0 60px;text-align:center;color:var(--muted);font-size:.88rem}
   footer b{color:var(--gold-soft)}
@@ -221,6 +231,7 @@
     <div class="nav-links">
       <a href="#equipe" class="hide-m" data-i="nav_team">L'équipe</a>
       <a href="#prevention" class="hide-m" data-i="nav_prev">Prévention</a>
+      <button class="btn-key" onclick="openProfile()">👤<span class="hide-m">&nbsp;Mon profil</span></button>
       <button class="btn-key lang" onclick="toggleLang()" id="langBtn">Wolof 🇸🇳</button>
       <button class="btn-key" onclick="openModal('settingsModal')">⚙️<span class="hide-m">&nbsp;</span><span data-i="nav_ia" class="hide-m">Connexion IA</span></button>
     </div>
@@ -269,6 +280,15 @@
     <h2 data-i="prev_t">📢 Campagnes de prévention</h2>
     <p data-i="prev_p">Des messages de santé publique à écouter et à partager autour de vous. De nouvelles campagnes arrivent chaque saison.</p>
   </div>
+  <div class="gov-band">
+    🏛️ Ces campagnes relaient les <b>programmes officiels du Ministère de la Santé et de l'Action Sociale du Sénégal</b> : lutte contre le paludisme (CPS, moustiquaires MII, TPI), vaccination (PEV), et les actualités sanitaires nationales.
+    <div class="gov-links">
+      <a href="https://www.sante.gouv.sn" target="_blank" rel="noopener">🌐 sante.gouv.sn</a>
+      <a href="https://www.sante.gouv.sn/Actualites" target="_blank" rel="noopener">📰 Actualités officielles</a>
+      <a href="https://www.sante.gouv.sn/Actualites/ensemble-contre-le-paludisme" target="_blank" rel="noopener">🦟 Programme paludisme</a>
+      <a href="tel:1515">📞 SAMU 1515</a>
+    </div>
+  </div>
   <div class="prev-grid" id="prevGrid"></div>
 </div>
 
@@ -307,7 +327,7 @@
     <div class="chat-input">
       <button class="mic-btn" id="micBtn" onclick="toggleMic()" title="Appuyez et parlez">🎤</button>
       <button class="attach-btn" id="attachBtn" onclick="document.getElementById('fileInput').click()" title="Envoyer une photo : radio, IRM, ordonnance, peau…">📷</button>
-      <input type="file" id="fileInput" accept="image/*" style="display:none" onchange="handleFile(this)">
+      <input type="file" id="fileInput" accept="image/*,application/pdf" style="display:none" onchange="handleFile(this)">
       <input type="text" id="chatText" placeholder="Écrivez ici… ou appuyez sur le micro" onkeydown="if(event.key==='Enter')sendMsg()">
       <button class="send-btn" onclick="sendMsg()" title="Envoyer">➤</button>
     </div>
@@ -326,12 +346,40 @@
   </div>
 </div>
 
+<!-- ============ PROFIL SANTÉ ============ -->
+<div class="modal-bg" id="profileModal">
+  <div class="modal">
+    <span class="m-ic">👤</span>
+    <h2>Mon profil santé</h2>
+    <p>Ces informations restent dans <b>votre téléphone</b> et aident les médecins à personnaliser leurs conseils (doses selon l'âge et le poids, prudence si grossesse ou maladie chronique). Tout est facultatif.</p>
+    <div class="pf-grid">
+      <div><label>Prénom</label><input id="pf_name" placeholder="Ex : Awa"></div>
+      <div><label>Âge (années)</label><input id="pf_age" type="number" min="0" max="120" inputmode="numeric" placeholder="Ex : 34"></div>
+      <div><label>Sexe</label><select id="pf_sex"><option value="">—</option><option>Femme</option><option>Homme</option></select></div>
+      <div><label>Poids (kg)</label><input id="pf_weight" type="number" min="1" max="300" inputmode="numeric" placeholder="Ex : 65"></div>
+      <div><label>Grossesse en cours ?</label><select id="pf_preg"><option value="">—</option><option>Oui</option><option>Non</option><option>Ne sait pas</option></select></div>
+      <div><label>Village / Région</label><input id="pf_region" placeholder="Ex : Kolda"></div>
+    </div>
+    <label>Maladies connues (tension, diabète, drépanocytose, asthme…)</label>
+    <input id="pf_chronic" placeholder="Ex : hypertension depuis 2023">
+    <label>Allergies (médicaments, aliments…)</label>
+    <input id="pf_allergy" placeholder="Ex : allergie à la pénicilline">
+    <label>Médicaments pris en ce moment</label>
+    <input id="pf_meds" placeholder="Ex : amlodipine 5 mg chaque matin">
+    <div style="display:flex;gap:10px;margin-top:6px">
+      <button class="btn btn-gold" style="flex:1" onclick="saveProfile()">Enregistrer</button>
+      <button class="btn btn-ghost" style="flex:1" onclick="closeModal('profileModal')">Fermer</button>
+    </div>
+  </div>
+</div>
+
 <!-- ============ SETTINGS ============ -->
 <div class="modal-bg" id="settingsModal">
   <div class="modal">
     <span class="m-ic">⚙️</span>
     <h2>Connexion à l'intelligence Claude</h2>
-    <p>Sans clé, l'application marche en <b>mode démonstration</b> (réponses préparées pour les cas fréquents ; l'analyse de photos est désactivée). Avec une clé API Anthropic, chaque médecin devient une <b>vraie IA experte</b> qui comprend toutes vos questions <b>et analyse vos photos médicales</b>.</p>
+    <p>Sans clé, l'application marche en <b>mode démonstration</b> (réponses préparées pour les cas fréquents ; l'analyse de photos et PDF est désactivée). Avec une clé API Anthropic, chaque médecin devient une <b>vraie IA experte</b> qui comprend toutes vos questions <b>et analyse vos documents médicaux</b>.</p>
+    <p>💡 <b>Pour un déploiement</b> (tablette de poste de santé, pilote) : mettez la clé une seule fois dans le fichier <b>config.js</b> — tous les utilisateurs de cette installation auront l'IA sans rien configurer. ⚠️ Jamais de vraie clé dans config.js sur un site public.</p>
     <input type="password" id="apiKeyInput" placeholder="sk-ant-… (votre clé API Anthropic)">
     <div style="display:flex;gap:10px">
       <button class="btn btn-gold" style="flex:1" onclick="saveKey()">Enregistrer</button>
@@ -437,7 +485,7 @@ const VISION_RULES=" Si l'utilisateur envoie une image (radiographie, IRM, écho
 const WOLOF_RULES=" L'utilisateur a choisi le wolof : réponds en wolof simple (alphabet latin), en expliquant les mots médicaux, avec si besoin les termes français entre parenthèses.";
 
 /* Méthode de consultation commune : ce qui fait qu'un médecin est un vrai médecin */
-const CONSULT_METHOD=" MÉTHODE DE CONSULTATION (à suivre à chaque échange) : 1) Écoute la plainte sans la minimiser. 2) Pose des questions ciblées, UNE ou DEUX à la fois : depuis quand, où exactement, intensité, ce qui aggrave ou soulage, fièvre associée, antécédents importants (diabète, tension, grossesse, drépanocytose), traitements déjà pris (y compris traditionnels — sans juger). 3) Quand tu as assez d'éléments, résume ce que tu as compris en une phrase. 4) Donne ton évaluation PRUDENTE : les causes les plus fréquentes dans le contexte africain, en expliquant ton raisonnement simplement, sans jamais affirmer un diagnostic. 5) Donne des conseils pratiques réalisables avec peu de moyens. 6) Termine TOUJOURS par l'orientation : quoi surveiller, quand consulter, où aller. RÈGLES STRICTES : tu ne recommandes que des produits sans ordonnance (paracétamol, SRO, zinc...) avec les bonnes doses ; JAMAIS d'antibiotique ni de médicament sur ordonnance ; si la question sort de ta spécialité, oriente vers le bon collègue de l'équipe Ndimbal (Dr Diallo généraliste, Dr Ndiaye pédiatre, Dr Bâ gynécologue, Dr Sarr cardiologue, Dr Koné infectiologue, Dr Traoré dermatologue, Dr Diop santé mentale, Dr Touré ophtalmologue, Dr Sow nutritionniste, Dr Fall pharmacien) ; au moindre signe de danger, ordonne d'aller au poste de santé MAINTENANT et donne les gestes d'attente.";
+const CONSULT_METHOD=" MÉTHODE DE CONSULTATION (à suivre à chaque échange) : 1) Écoute la plainte sans la minimiser. 2) Pose des questions ciblées, UNE ou DEUX à la fois : depuis quand, où exactement, intensité, ce qui aggrave ou soulage, fièvre associée, antécédents importants (diabète, tension, grossesse, drépanocytose), traitements déjà pris (y compris traditionnels — sans juger). 3) Quand tu as assez d'éléments, résume ce que tu as compris en une phrase. 4) Donne ton évaluation PRUDENTE : les causes les plus fréquentes dans le contexte africain, en expliquant ton raisonnement simplement, sans jamais affirmer un diagnostic. 5) Donne des conseils pratiques réalisables avec peu de moyens. 6) Termine TOUJOURS par l'orientation : quoi surveiller, quand consulter, où aller. RÈGLES STRICTES : tu ne recommandes que des produits sans ordonnance (paracétamol, SRO, zinc...) avec les bonnes doses ; JAMAIS d'antibiotique ni de médicament sur ordonnance ; si la question sort de ta spécialité, oriente vers le bon collègue de l'équipe Ndimbal (Dr Diallo généraliste, Dr Ndiaye pédiatre, Dr Bâ gynécologue, Dr Sarr cardiologue, Dr Koné infectiologue, Dr Traoré dermatologue, Dr Diop santé mentale, Dr Touré ophtalmologue, Dr Sow nutritionniste, Dr Fall pharmacien) ; au moindre signe de danger, ordonne d'aller au poste de santé MAINTENANT et donne les gestes d'attente. TÉLÉCONSULTATION DE QUALITÉ : quand la consultation touche à sa fin (le patient n'a plus de questions ou te remercie), propose un court BILAN DE CONSULTATION en 3 points : ce que tu retiens de son cas, les 2-3 conseils essentiels à appliquer, et le signal précis qui doit le faire consulter un soignant. Assure le SUIVI : si l'historique montre une consultation précédente, commence par demander comment la situation a évolué depuis.";
 
 /* Bagage d'expertise spécifique injecté à chaque spécialiste (mode IA) */
 const KNOWLEDGE={
@@ -586,15 +634,20 @@ const DOCTORS=[
   ]}
 ];
 
-/* ---------- Campagnes de prévention ---------- */
+/* ---------- Campagnes de prévention — reliées aux programmes du Ministère de la Santé (sante.gouv.sn) ---------- */
+const GOV_URL="https://www.sante.gouv.sn", GOV_NEWS="https://www.sante.gouv.sn/Actualites", GOV_PALU="https://www.sante.gouv.sn/Actualites/ensemble-contre-le-paludisme";
 const CAMPAIGNS=[
- {ic:"🦟",t:"Saison des pluies = saison du palu",p:"Dormez sous moustiquaire imprégnée toutes les nuits, éliminez les eaux stagnantes, et testez toute fièvre au poste de santé.",
-  audio:"Message de prévention de Ndimbal Santé. La saison des pluies est là, et avec elle le paludisme. Trois gestes qui sauvent : dormez toutes les nuits sous une moustiquaire imprégnée, surtout les enfants et les femmes enceintes. Videz les eaux stagnantes autour de votre maison. Et si quelqu'un a de la fièvre, faites le test rapide au poste de santé avant tout traitement. Le paludisme se soigne très bien quand on agit vite. Partagez ce message autour de vous."},
- {ic:"💉",t:"Vaccins : le bouclier de vos enfants",p:"BCG à la naissance, penta à 6-10-14 semaines, rougeole à 9 mois. Gratuit au poste de santé, rattrapage toujours possible.",
-  audio:"Message de prévention de Ndimbal Santé. Les vaccins protègent vos enfants contre des maladies graves : rougeole, polio, coqueluche, méningite. Ils sont gratuits au poste de santé. À la naissance, à six, dix et quatorze semaines, puis à neuf mois. Si votre enfant a raté des doses, ce n'est pas trop tard : on peut toujours rattraper. Apportez le carnet, même abîmé. Un enfant vacciné est un enfant protégé."},
- {ic:"🩸",t:"Connaissez-vous votre tension ?",p:"Près d'un adulte sur deux est hypertendu sans le savoir. Un contrôle gratuit par mois peut éviter un AVC.",
+ {ic:"💊",t:"CPS : le palu des enfants se prévient",p:"Programme national : pendant l'hivernage, les enfants de 3 mois à 10 ans reçoivent GRATUITEMENT des médicaments préventifs chaque mois, à domicile ou au poste de santé.",link:GOV_PALU,
+  audio:"Message relayé par Ndimbal Santé, avec le Programme national de lutte contre le paludisme. Pendant la saison des pluies, la chimioprévention du paludisme saisonnier protège vos enfants de 3 mois à 10 ans. Chaque mois, des agents passent donner gratuitement les médicaments préventifs. Acceptez toutes les doses, chaque passage compte. Ce programme a déjà fait baisser fortement le paludisme chez les enfants du Sénégal. Partagez ce message."},
+ {ic:"🛏️",t:"Moustiquaires imprégnées : campagne nationale",p:"Des millions de moustiquaires MII sont distribuées gratuitement par le Ministère. Dormir dessous CHAQUE nuit, toute l'année — surtout enfants et femmes enceintes.",link:GOV_PALU,
+  audio:"Message relayé par Ndimbal Santé. Le Ministère de la Santé distribue gratuitement des moustiquaires imprégnées dans tout le pays. Une moustiquaire protège deux à trois ans, mais seulement si on dort dessous chaque nuit, toute l'année, même quand il fait chaud. Les enfants et les femmes enceintes d'abord. Si votre ménage n'en a pas reçu, demandez au poste de santé quand passe la prochaine distribution."},
+ {ic:"🤰",t:"Femmes enceintes : TPI et consultations",p:"À chaque consultation prénatale, le traitement préventif du palu (TPI) est offert. Au moins 4 CPN pendant la grossesse — la morbidité des femmes enceintes a chuté de moitié grâce à cela.",link:GOV_NEWS,
+  audio:"Message relayé par Ndimbal Santé. Femmes enceintes, le paludisme est dangereux pour vous et votre bébé. À chaque consultation prénatale, on vous donne gratuitement le traitement préventif intermittent. Allez à au moins quatre consultations pendant la grossesse, dormez sous moustiquaire, et accouchez dans une structure de santé. Ces gestes simples ont déjà divisé par deux les cas graves chez les femmes enceintes au Sénégal."},
+ {ic:"💉",t:"Vaccination : le PEV, et bientôt le vaccin palu",p:"BCG, polio, penta, rougeole : gratuits au poste de santé. Le Sénégal prépare l'introduction du vaccin antipaludique, en commençant par le sud-est du pays.",link:GOV_NEWS,
+  audio:"Message relayé par Ndimbal Santé. Les vaccins du programme élargi de vaccination sont gratuits : à la naissance, à six, dix et quatorze semaines, puis à neuf mois. Et une grande nouvelle se prépare : le Sénégal va introduire le vaccin contre le paludisme, en commençant par les régions du sud-est. Gardez le carnet de vaccination de vos enfants et présentez-le à chaque visite. Un enfant vacciné est un enfant protégé."},
+ {ic:"🩸",t:"Connaissez-vous votre tension ?",p:"Près d'un adulte sur deux est hypertendu sans le savoir. Un contrôle gratuit par mois au poste de santé peut éviter un AVC.",link:GOV_NEWS,
   audio:"Message de prévention de Ndimbal Santé. L'hypertension ne fait pas mal, mais elle abîme le cœur et le cerveau en silence. Près d'un adulte sur deux est concerné sans le savoir. Faites contrôler votre tension une fois par mois au poste de santé, c'est rapide et souvent gratuit. Réduisez le sel et les cubes, marchez chaque jour. Et si un traitement vous a été donné, prenez-le tous les jours, à vie, même quand vous vous sentez bien."},
- {ic:"🫧",t:"L'eau propre sauve des vies",p:"Lavez les mains au savon, buvez de l'eau traitée ou bouillie, protégez les aliments des mouches : stop diarrhées et choléra.",
+ {ic:"🫧",t:"L'eau propre sauve des vies",p:"Lavez les mains au savon, buvez de l'eau traitée ou bouillie, protégez les aliments des mouches : stop diarrhées et choléra.",link:GOV_NEWS,
   audio:"Message de prévention de Ndimbal Santé. Les diarrhées et le choléra passent par l'eau sale et les mains sales. Quatre gestes simples : lavez-vous les mains au savon avant de manger et après les toilettes. Buvez de l'eau traitée, bouillie ou en sachet sûr. Couvrez les aliments pour les protéger des mouches. Et si quelqu'un a une diarrhée très liquide et abondante, comme de l'eau de riz, allez immédiatement au poste de santé, c'est peut-être le choléra."}
 ];
 
@@ -626,9 +679,10 @@ const pg=document.getElementById('prevGrid');
 CAMPAIGNS.forEach((c,i)=>{
   const el=document.createElement('div');el.className='prev-card';
   el.innerHTML=`<div class="p-ic">${c.ic}</div><h3>${c.t}</h3><p>${c.p}</p>
-    <div style="display:flex;gap:8px">
-      <button style="flex:2" onclick="playCampaign(${i},this)">🔊 Écouter</button>
-      <button style="flex:1" onclick="shareWA(CAMPAIGNS[${i}].audio)" title="Partager sur WhatsApp">📤 Partager</button>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button style="flex:2;min-width:110px" onclick="playCampaign(${i},this)">🔊 Écouter</button>
+      <button style="flex:1;min-width:100px" onclick="shareWA(CAMPAIGNS[${i}].audio)" title="Partager sur WhatsApp">📤 Partager</button>
+      <button style="flex:1;min-width:100px" onclick="window.open(CAMPAIGNS[${i}].link,'_blank')" title="Page officielle du Ministère">🏛️ Officiel</button>
     </div>`;
   pg.appendChild(el);
 });
@@ -646,7 +700,7 @@ function playCampaign(i,btn){
 }
 
 /* ---------- État ---------- */
-let current=null, voiceOn=true, autoConvo=false, history=[], recognizing=false, recog=null, pendingImage=null;
+let current=null, voiceOn=true, autoConvo=false, history=[], recognizing=false, recog=null, pendingImage=null, pendingPdf=null;
 
 /* ---------- Synthèse vocale : voix assortie au SEXE et à l'ÂGE de chaque médecin ---------- */
 let frVoice=null, voicesFR={f:[],m:[]};
@@ -675,11 +729,12 @@ function speak(text,doc,onDone){
   let matched=false;
   if(pool.length){u.voice=pool[(VIDX[doc.id]||0)%pool.length];matched=true;}
   else if(frVoice){u.voice=frVoice;}
-  /* si la voix correspond déjà au sexe : réglage léger ; sinon on force le timbre */
-  let pitch = matched ? (g==='f'?1.02:0.96) : (g==='f'?1.15:0.8);
-  let rate  = .95;
-  if(age>=50){pitch-=.06;rate=.88;}      /* voix plus grave et posée pour les aînés */
-  else if(age<=35){pitch+=.05;rate=.99;} /* voix plus claire et vive pour les jeunes */
+  /* Voix ADULTES uniquement : jamais de pitch élevé qui rendrait la voix enfantine.
+     L'âge joue surtout sur la VITESSE ; le pitch ne monte jamais au-dessus du naturel. */
+  let pitch = matched ? (g==='f'?1.0:0.93) : (g==='f'?1.08:0.8);
+  let rate  = .94;
+  if(age>=50){pitch-=.05;rate=.89;}  /* aîné : plus grave et posé */
+  else if(age<=35){rate=.97;}        /* jeune adulte : un peu plus vif, même timbre adulte */
   u.pitch=Math.max(.5,Math.min(2,pitch));u.rate=rate;
   const ind=document.getElementById('speakInd'),av=document.getElementById('chatAvatar');
   u.onstart=()=>{ind.classList.add('on');av.classList.add('talking');};
@@ -832,33 +887,49 @@ function showTyping(){const t=document.createElement('div');t.className='msg bot
 function hideTyping(){const t=document.getElementById('typing');if(t)t.remove();
   document.getElementById('micBtn').classList.remove('thinking');}
 
-/* ---------- Upload photo (radio, IRM, ordonnance, peau…) ---------- */
+/* ---------- Upload de documents : photos (radio, IRM, ordonnance, peau…) et PDF ---------- */
 function handleFile(input){
   const f=input.files[0];if(!f)return;
+  input.value='';
+  if(f.type==='application/pdf'){
+    if(f.size>4*1024*1024){addMsg('bot',"📄 Ce PDF dépasse 4 Mo — trop lourd pour l'analyse. Prenez plutôt en photo les pages importantes, une par une, avec le bouton 📷.");return;}
+    const r=new FileReader();
+    r.onload=()=>{
+      pendingPdf=r.result.split(',')[1];pendingImage=null;
+      document.getElementById('attachBtn').classList.add('has');
+      addMsg('user',`📄 Document PDF prêt à envoyer : <b>${escapeHTML(f.name)}</b>`);
+      addMsg('bot',"J'ai bien reçu votre document. Dites-moi en un mot ce que c'est (analyses, compte-rendu, ordonnance…), puis envoyez — je vous l'explique page par page.");
+    };
+    r.onerror=()=>addMsg('bot',"📄 Je n'ai pas réussi à lire ce fichier. Réessayez, ou prenez-le en photo.");
+    r.readAsDataURL(f);
+    return;
+  }
+  if(!f.type.startsWith('image/')){addMsg('bot',"Ce type de fichier n'est pas pris en charge. Envoyez une <b>photo</b> (JPG, PNG…) ou un <b>PDF</b>.");return;}
   const img=new Image();
   img.onload=()=>{
     const max=1200,scale=Math.min(1,max/Math.max(img.width,img.height));
     const cv=document.createElement('canvas');
     cv.width=Math.round(img.width*scale);cv.height=Math.round(img.height*scale);
     cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height);
-    pendingImage=cv.toDataURL('image/jpeg',.85).split(',')[1];
+    pendingImage=cv.toDataURL('image/jpeg',.85).split(',')[1];pendingPdf=null;
     document.getElementById('attachBtn').classList.add('has');
     addMsg('user',`📷 Photo prête à envoyer :<img class="att" src="data:image/jpeg;base64,${pendingImage}" alt="photo envoyée">`);
     addMsg('bot',"J'ai bien reçu votre photo. Ajoutez un mot d'explication si vous voulez (ex : « c'est mon ordonnance », « c'est sur mon bras depuis 2 semaines »), puis envoyez.");
     URL.revokeObjectURL(img.src);
   };
+  img.onerror=()=>{addMsg('bot',"Je n'ai pas réussi à lire cette image. Réessayez avec une photo JPG ou PNG.");URL.revokeObjectURL(img.src);};
   img.src=URL.createObjectURL(f);
-  input.value='';
 }
 
 async function sendMsg(){
   const inp=document.getElementById('chatText');const text=inp.value.trim();
-  if((!text&&!pendingImage)||!current)return;
+  if((!text&&!pendingImage&&!pendingPdf)||!current)return;
   inp.value='';inp.classList.remove('interim');
   if(text){addMsg('user',escapeHTML(text));persist('user',text,escapeHTML(text));}
-  const img=pendingImage;pendingImage=null;
+  const img=pendingImage,pdf=pendingPdf;pendingImage=null;pendingPdf=null;
   document.getElementById('attachBtn').classList.remove('has');
-  history.push({role:'user',content:img?'[Photo envoyée] '+text:text||'[Photo envoyée]'});
+  const attLabel=img?'[Photo envoyée] ':(pdf?'[Document PDF envoyé] ':'');
+  history.push({role:'user',content:(attLabel+(text||'')).trim()});
 
   /* 1. signes de danger — priorité absolue */
   if(text)for(const f of RED_FLAGS){
@@ -871,13 +942,13 @@ async function sendMsg(){
     }
   }
   /* 2. Claude API si clé, sinon moteur démo */
-  const key=localStorage.getItem('ndimbal_api_key');
+  const key=getApiKey();
   showTyping();
   let reply;
   if(key){
-    try{reply=await askClaude(key,text,img);}
+    try{reply=await askClaude(key,text,img,pdf);}
     catch(e){reply="(Connexion à l'IA impossible : "+escapeHTML(e.message)+" — je passe en mode démonstration.)<br><br>"+demoReply(text||'photo');}
-  }else if(img){
+  }else if(img||pdf){
     await new Promise(r=>setTimeout(r,600));
     reply="J'aimerais beaucoup analyser votre photo, mais l'analyse d'images demande la <b>connexion IA</b>. Demandez à la personne qui gère l'application d'activer la clé (bouton ⚙️ en haut de la page). En attendant, décrivez-moi ce que vous voyez avec vos mots, je vous aiderai autrement.";
   }else{
@@ -900,13 +971,16 @@ function demoReply(text){
   return fallbacks[Math.floor(Math.random()*fallbacks.length)];
 }
 
-/* ---------- Connexion Claude API (texte + vision) ---------- */
-async function askClaude(key,text,imgB64){
+/* ---------- Connexion Claude API (texte + vision + PDF + profil patient) ---------- */
+async function askClaude(key,text,imgB64,pdfB64){
   const msgs=history.slice(0,-1).slice(-10).map(m=>({role:m.role,content:m.content}));
   let userContent;
   if(imgB64){
     userContent=[{type:'image',source:{type:'base64',media_type:'image/jpeg',data:imgB64}},
                  {type:'text',text:text||"Voici ma photo. Peux-tu m'aider à la comprendre ?"}];
+  }else if(pdfB64){
+    userContent=[{type:'document',source:{type:'base64',media_type:'application/pdf',data:pdfB64}},
+                 {type:'text',text:text||"Voici mon document médical. Peux-tu me l'expliquer simplement ?"}];
   }else{userContent=text;}
   msgs.push({role:'user',content:userContent});
   const res=await fetch('https://api.anthropic.com/v1/messages',{
@@ -914,7 +988,7 @@ async function askClaude(key,text,imgB64){
     headers:{'Content-Type':'application/json','x-api-key':key,
       'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
     body:JSON.stringify({model:'claude-sonnet-5',max_tokens:800,
-      system:current.system+(KNOWLEDGE[current.id]||'')+CONSULT_METHOD+VISION_RULES+(LANG==='wo'?WOLOF_RULES:" Réponds en français simple.")+" Réponds en 4 à 8 phrases courtes maximum (ta réponse sera lue à voix haute). Termine par une question ou un conseil d'action clair.",
+      system:current.system+(KNOWLEDGE[current.id]||'')+CONSULT_METHOD+profileText()+VISION_RULES+(LANG==='wo'?WOLOF_RULES:" Réponds en français simple.")+" Réponds en 4 à 8 phrases courtes maximum (ta réponse sera lue à voix haute). Termine par une question ou un conseil d'action clair.",
       messages:msgs})
   });
   if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e.error?.message||('erreur '+res.status));}
@@ -927,6 +1001,43 @@ function escapeHTML(s){const d=document.createElement('div');d.textContent=s;ret
 /* ---------- Trouver un centre de santé ---------- */
 function findCenter(){
   window.open('https://www.google.com/maps/search/'+encodeURIComponent('poste de santé OR centre de santé OR hôpital'),'_blank');
+}
+
+/* ---------- Clé API : réglage utilisateur OU clé de déploiement (config.js) ---------- */
+function getApiKey(){
+  const local=localStorage.getItem('ndimbal_api_key');
+  if(local)return local;
+  const cfg=(window.NDIMBAL_CONFIG&&window.NDIMBAL_CONFIG.apiKey||'').trim();
+  return cfg||null;
+}
+
+/* ---------- Profil santé du patient (stocké UNIQUEMENT dans le téléphone) ---------- */
+const PF_FIELDS=['name','age','sex','weight','preg','region','chronic','allergy','meds'];
+function loadProfile(){try{return JSON.parse(localStorage.getItem('ndimbal_profile')||'{}');}catch(e){return{};}}
+function openProfile(){
+  const p=loadProfile();
+  PF_FIELDS.forEach(f=>{const el=document.getElementById('pf_'+f);if(el)el.value=p[f]||'';});
+  openModal('profileModal');
+}
+function saveProfile(){
+  const p={};
+  PF_FIELDS.forEach(f=>{const el=document.getElementById('pf_'+f);if(el&&el.value.trim())p[f]=el.value.trim();});
+  localStorage.setItem('ndimbal_profile',JSON.stringify(p));
+  closeModal('profileModal');
+}
+function profileText(){
+  const p=loadProfile();const parts=[];
+  if(p.name)parts.push('prénom : '+p.name);
+  if(p.age)parts.push('âge : '+p.age+' ans');
+  if(p.sex)parts.push('sexe : '+p.sex);
+  if(p.weight)parts.push('poids : '+p.weight+' kg');
+  if(p.preg)parts.push('grossesse en cours : '+p.preg);
+  if(p.region)parts.push('lieu : '+p.region);
+  if(p.chronic)parts.push('maladies connues : '+p.chronic);
+  if(p.allergy)parts.push('allergies : '+p.allergy);
+  if(p.meds)parts.push('médicaments actuels : '+p.meds);
+  if(!parts.length)return " PROFIL DU PATIENT : non renseigné — demande poliment l'âge et le sexe au début de la consultation, et le poids si tu dois parler de doses.";
+  return " PROFIL DU PATIENT (utilise-le pour personnaliser et SÉCURISER tes conseils — doses selon âge/poids, prudence selon grossesse/maladies/allergies/médicaments ; signale toute interaction) : "+parts.join(' ; ')+".";
 }
 
 /* ---------- Modals ---------- */
