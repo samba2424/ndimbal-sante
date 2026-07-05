@@ -400,6 +400,7 @@
         <div><label>Poids (kg)</label><input id="pf_weight" type="number" min="1" max="300" inputmode="numeric" placeholder="Ex : 65"></div>
         <div><label>Grossesse en cours ?</label><select id="pf_preg"><option value="">—</option><option>Oui</option><option>Non</option><option>Ne sait pas</option></select></div>
         <div><label>Téléphone</label><input id="pf_phone" type="tel" inputmode="tel" placeholder="Ex : 77 123 45 67"></div>
+        <div><label>Email (facultatif)</label><input id="pf_email" type="email" inputmode="email" placeholder="Ex : awa@gmail.com"></div>
         <div><label>Village / Région</label><input id="pf_region" placeholder="Ex : Kolda"></div>
       </div>
       <label>Adresse (quartier, rue, repère…)</label>
@@ -1198,6 +1199,7 @@ function caregiverSummary(){
   if(p.preg)pf.push("Grossesse : "+p.preg);
   if(p.address||p.region)pf.push("Adresse : "+[p.address,p.region].filter(Boolean).join(', '));
   if(p.phone)pf.push("Téléphone : "+p.phone);
+  if(p.email)pf.push("Email : "+p.email);
   if(p.chronic)pf.push("Maladies connues : "+p.chronic);if(p.allergy)pf.push("Allergies : "+p.allergy);
   if(p.meds)pf.push("Médicaments : "+p.meds);
   let s="RÉSUMÉ DE CONSULTATION — NDIMBAL SANTÉ\n(à montrer à un professionnel de santé)\n";
@@ -1229,7 +1231,7 @@ function getApiKey(){
 }
 
 /* ---------- Profil santé du patient (stocké UNIQUEMENT dans le téléphone) ---------- */
-const PF_FIELDS=['name','lastname','age','sex','weight','preg','phone','region','address','chronic','allergy','meds'];
+const PF_FIELDS=['name','lastname','age','sex','weight','preg','phone','email','region','address','chronic','allergy','meds'];
 function loadProfile(){try{return JSON.parse(localStorage.getItem('ndimbal_profile')||'{}');}catch(e){return{};}}
 function openProfile(){
   const p=loadProfile();
@@ -1259,6 +1261,7 @@ function renderPfCard(p){
       <div><div class="pf-name">${escapeHTML(fullName)}</div><div class="pf-sub">${sub||'informations à compléter'}</div></div></div>`
     +row('📍 Adresse',[p.address,p.region].filter(Boolean).join(', '))
     +row('📞 Téléphone',p.phone)
+    +row('✉️ Email',p.email)
     +row('🤰 Grossesse',p.preg)
     +row('🩺 Maladies connues',p.chronic)
     +row('⚠️ Allergies',p.allergy)
@@ -1273,6 +1276,7 @@ function shareProfile(){
   if(p.preg)s+="Grossesse : "+p.preg+"\n";
   if(p.address||p.region)s+="Adresse : "+[p.address,p.region].filter(Boolean).join(', ')+"\n";
   if(p.phone)s+="Téléphone : "+p.phone+"\n";
+  if(p.email)s+="Email : "+p.email+"\n";
   if(p.chronic)s+="Maladies connues : "+p.chronic+"\n";
   if(p.allergy)s+="Allergies : "+p.allergy+"\n";
   if(p.meds)s+="Médicaments : "+p.meds+"\n";
