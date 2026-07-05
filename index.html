@@ -126,6 +126,7 @@
   .chat-head .avatar{width:54px;height:54px;border-radius:16px;flex-shrink:0;margin:0}
   .chat-head h3{font-size:1.02rem}
   .chat-head .spec{color:var(--emerald);font-size:.78rem;font-weight:600}
+  .c-timer{font-size:.74rem;color:var(--gold-soft);font-weight:700;margin-left:8px;letter-spacing:.03em}
   .speaking-ind{display:none;gap:3px;align-items:flex-end;height:16px;margin-left:6px}
   .speaking-ind.on{display:inline-flex}
   .speaking-ind i{width:3px;background:var(--gold);border-radius:2px;animation:eq .8s infinite ease-in-out}
@@ -313,10 +314,12 @@
         <h3 id="chatName"></h3>
         <span class="spec" id="chatSpec"></span>
         <span class="speaking-ind" id="speakInd"><i></i><i></i><i></i><i></i></span>
+        <span class="c-timer" id="consultTimer" title="Temps restant de la consultation gratuite"></span>
       </div>
       <div class="chat-head-actions">
         <button class="icon-btn" id="convoToggle" title="Mode conversation : le micro se rallume après chaque réponse" onclick="toggleConvo()">🔁</button>
         <button class="icon-btn" id="voiceToggle" title="Activer/couper la voix" onclick="toggleVoice()">🔊</button>
+        <button class="icon-btn" title="Résumé de consultation à montrer à un soignant" onclick="caregiverSummary()">📋</button>
         <button class="icon-btn" title="Effacer la conversation" onclick="clearConvo()">🗑️</button>
         <button class="icon-btn" title="Fermer" onclick="closeChat()">✕</button>
       </div>
@@ -343,6 +346,21 @@
     <p>🚨 <b>En cas d'urgence</b> (saignement important, difficulté à respirer, convulsions, perte de connaissance) : allez <b>immédiatement</b> au poste de santé le plus proche.</p>
     <p>🔊 Les médecins <b>parlent à voix haute</b>, 🎤 vous pouvez leur <b>répondre au micro</b>, et 📷 leur <b>montrer une photo</b> (radio, ordonnance, peau…). Pas besoin de savoir lire ou écrire.</p>
     <button class="btn btn-gold" style="width:100%" onclick="acceptDisclaimer()">J'ai compris, continuer</button>
+  </div>
+</div>
+
+<!-- ============ QUOTA HEBDOMADAIRE ============ -->
+<div class="modal-bg" id="quotaModal">
+  <div class="modal">
+    <span class="m-ic">⏳</span>
+    <h2>Consultation de la semaine déjà utilisée</h2>
+    <p id="quotaText"></p>
+    <p>💚 Le <b>suivi avec le même médecin</b> reste ouvert toute la semaine, gratuitement.</p>
+    <p>🚨 <b>C'est une urgence ?</b> Allez au poste de santé le plus proche ou appelez le SAMU <a href="tel:1515" style="color:var(--gold-soft)">1515</a>. Le triage d'urgence n'est <b>jamais</b> bloqué :</p>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-gold" style="flex:1" onclick="closeModal('quotaModal');startChat(0,false,true)">🚨 Triage d'urgence</button>
+      <button class="btn btn-ghost" style="flex:1" onclick="closeModal('quotaModal')">Fermer</button>
+    </div>
   </div>
 </div>
 
@@ -485,7 +503,7 @@ const VISION_RULES=" Si l'utilisateur envoie une image (radiographie, IRM, écho
 const WOLOF_RULES=" L'utilisateur a choisi le wolof : réponds en wolof simple (alphabet latin), en expliquant les mots médicaux, avec si besoin les termes français entre parenthèses.";
 
 /* Méthode de consultation commune : ce qui fait qu'un médecin est un vrai médecin */
-const CONSULT_METHOD=" MÉTHODE DE CONSULTATION (à suivre à chaque échange) : 1) Écoute la plainte sans la minimiser. 2) Pose des questions ciblées, UNE ou DEUX à la fois : depuis quand, où exactement, intensité, ce qui aggrave ou soulage, fièvre associée, antécédents importants (diabète, tension, grossesse, drépanocytose), traitements déjà pris (y compris traditionnels — sans juger). 3) Quand tu as assez d'éléments, résume ce que tu as compris en une phrase. 4) Donne ton évaluation PRUDENTE : les causes les plus fréquentes dans le contexte africain, en expliquant ton raisonnement simplement, sans jamais affirmer un diagnostic. 5) Donne des conseils pratiques réalisables avec peu de moyens. 6) Termine TOUJOURS par l'orientation : quoi surveiller, quand consulter, où aller. RÈGLES STRICTES : tu ne recommandes que des produits sans ordonnance (paracétamol, SRO, zinc...) avec les bonnes doses ; JAMAIS d'antibiotique ni de médicament sur ordonnance ; si la question sort de ta spécialité, oriente vers le bon collègue de l'équipe Ndimbal (Dr Diallo généraliste, Dr Ndiaye pédiatre, Dr Bâ gynécologue, Dr Sarr cardiologue, Dr Koné infectiologue, Dr Traoré dermatologue, Dr Diop santé mentale, Dr Touré ophtalmologue, Dr Sow nutritionniste, Dr Fall pharmacien) ; au moindre signe de danger, ordonne d'aller au poste de santé MAINTENANT et donne les gestes d'attente. TÉLÉCONSULTATION DE QUALITÉ : quand la consultation touche à sa fin (le patient n'a plus de questions ou te remercie), propose un court BILAN DE CONSULTATION en 3 points : ce que tu retiens de son cas, les 2-3 conseils essentiels à appliquer, et le signal précis qui doit le faire consulter un soignant. Assure le SUIVI : si l'historique montre une consultation précédente, commence par demander comment la situation a évolué depuis.";
+const CONSULT_METHOD=" MÉTHODE DE CONSULTATION (à suivre à chaque échange) : 1) Écoute la plainte sans la minimiser. 2) Pose des questions ciblées, UNE ou DEUX à la fois : depuis quand, où exactement, intensité, ce qui aggrave ou soulage, fièvre associée, antécédents importants (diabète, tension, grossesse, drépanocytose), traitements déjà pris (y compris traditionnels — sans juger). 3) Quand tu as assez d'éléments, résume ce que tu as compris en une phrase. 4) Donne ton évaluation PRUDENTE : les causes les plus fréquentes dans le contexte africain, en expliquant ton raisonnement simplement, sans jamais affirmer un diagnostic. 5) Donne des conseils pratiques réalisables avec peu de moyens. 6) Termine TOUJOURS par l'orientation : quoi surveiller, quand consulter, où aller. RÈGLES STRICTES : tu ne recommandes que des produits sans ordonnance (paracétamol, SRO, zinc...) avec les bonnes doses ; JAMAIS d'antibiotique ni de médicament sur ordonnance ; si la question sort de ta spécialité, oriente vers le bon collègue de l'équipe Ndimbal (Dr Diallo généraliste, Dr Ndiaye pédiatre, Dr Bâ gynécologue, Dr Sarr cardiologue, Dr Koné infectiologue, Dr Traoré dermatologue, Dr Diop santé mentale, Dr Touré ophtalmologue, Dr Sow nutritionniste, Dr Fall pharmacien) ; au moindre signe de danger, ordonne d'aller au poste de santé MAINTENANT et donne les gestes d'attente. TÉLÉCONSULTATION DE QUALITÉ : quand la consultation touche à sa fin (le patient n'a plus de questions ou te remercie), propose un court BILAN DE CONSULTATION en 3 points : ce que tu retiens de son cas, les 2-3 conseils essentiels à appliquer, et le signal précis qui doit le faire consulter un soignant. Assure le SUIVI : si l'historique montre une consultation précédente, commence par demander comment la situation a évolué depuis. COMPORTEMENT HUMAIN : parle comme un vrai médecin en chair et en os — chaleureux, naturel, jamais robotique, jamais de listes à puces dans la conversation. Appelle le patient par son prénom s'il est connu. Montre que tu retiens tout : fais référence explicitement à ce qu'il a dit plus tôt (« vous m'avez dit tout à l'heure que… »). Pose d'abord LA question qui départage le mieux les causes possibles, comme en vraie consultation. Une seule idée par phrase. Si le patient s'inquiète, rassure d'abord, explique ensuite.";
 
 /* Bagage d'expertise spécifique injecté à chaque spécialiste (mode IA) */
 const KNOWLEDGE={
@@ -660,6 +678,8 @@ const RED_FLAGS=[
   {re:/avale.*produit|bu.*produit|empoisonn|avale.*m[eé]dicament/i, msg:"une possible intoxication"}
 ];
 const RED_ALERT="🚨 <b>URGENCE — Écoutez-moi bien.</b> Ce que vous décrivez ({X}) est un signe de danger grave. Il faut aller au poste de santé, au centre de santé ou à l'hôpital le plus proche <b>MAINTENANT</b>, sans attendre. Faites-vous accompagner. Si la personne est inconsciente, allongez-la sur le côté. Ne donnez rien à boire ni à manger. Partez tout de suite — chaque minute compte.<br><br>📞 <b>Numéros d'urgence au Sénégal :</b> SAMU <a href='tel:1515' style='color:#ffd9d5'>1515</a> · Pompiers <a href='tel:18' style='color:#ffd9d5'>18</a>";
+const RED_ALERT_WO="🚨 <b>JAMP LA — dégluleen bu baax.</b> Li nga wax dafa mëna doon musiba bu réy. Demal ci postu santé bi walla lopitaal bi gën a jege <b>LÉEGI LÉEGI</b>, bul xaar. Na la kenn gunge. Su nit ki xamatul dara, tëralal ko ci wetam. Bul ko jox ndox, bul ko jox lekk. Demleen léegi — saa su nekk am na solo.<br><br>📞 <b>Nimero yu jamp ci Senegaal :</b> SAMU <a href='tel:1515' style='color:#ffd9d5'>1515</a> · Sapëer <a href='tel:18' style='color:#ffd9d5'>18</a>";
+const WO_DEMO_NOTE="🇸🇳 <i>Ci mode démonstration bi, tontu yu matale yi ci français lañu bind. Su kilifa gi defee lëkkalekaay IA bi (⚙️), doktoor yi dinañu la tontu ci wolof bu leer.</i><br><br>";
 
 /* ---------- Rendu équipe + campagnes ---------- */
 const grid=document.getElementById('teamGrid');
@@ -701,6 +721,48 @@ function playCampaign(i,btn){
 
 /* ---------- État ---------- */
 let current=null, voiceOn=true, autoConvo=false, history=[], recognizing=false, recog=null, pendingImage=null, pendingPdf=null;
+
+/* ---------- Consultation gratuite : 15 minutes max, 1 nouvelle par semaine ---------- */
+const CONSULT_MAX_MIN=15;
+let consultTimer=null, consultEnded=false, consultCounted=false;
+function weekKey(){const d=new Date();const day=(d.getDay()+6)%7;d.setDate(d.getDate()-day);return d.toISOString().slice(0,10);}
+function getQuota(){try{return JSON.parse(localStorage.getItem('ndimbal_quota')||'null')||{};}catch(e){return{};}}
+function quotaAllows(docId){
+  const q=getQuota();
+  if(q.week!==weekKey()||!q.docId)return true;  /* nouvelle semaine ou rien d'utilisé */
+  return q.docId===docId;                        /* suivi avec le même médecin : toujours permis */
+}
+function markQuota(){
+  if(consultCounted||!current)return;consultCounted=true;
+  localStorage.setItem('ndimbal_quota',JSON.stringify({week:weekKey(),docId:current.id}));
+}
+function showQuotaModal(){
+  const q=getQuota();const doc=DOCTORS.find(d=>d.id===q.docId);
+  const next=new Date();const day=(next.getDay()+6)%7;next.setDate(next.getDate()+(7-day));
+  document.getElementById('quotaText').innerHTML=
+    "Votre consultation gratuite de cette semaine a été utilisée avec <b>"+(doc?doc.name:'un spécialiste')+"</b>. "+
+    "Vous pourrez consulter un autre spécialiste à partir du <b>"+next.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'})+"</b>.";
+  openModal('quotaModal');
+}
+function startConsultTimer(){
+  clearInterval(consultTimer);consultEnded=false;consultCounted=false;
+  const deadline=Date.now()+CONSULT_MAX_MIN*60000;
+  const el=document.getElementById('consultTimer');
+  el.textContent='⏱ '+CONSULT_MAX_MIN+':00';
+  consultTimer=setInterval(()=>{
+    const left=deadline-Date.now();
+    if(left<=0){clearInterval(consultTimer);el.textContent='⏱ 0:00';endConsultation();return;}
+    const m=Math.floor(left/60000),s=Math.floor(left%60000/1000);
+    el.textContent='⏱ '+m+':'+String(s).padStart(2,'0');
+  },1000);
+}
+function endConsultation(){
+  if(consultEnded)return;consultEnded=true;
+  if(recognizing){try{recog.abort();}catch(_){ }stopMicUI();}
+  const msg="⏱ <b>Notre consultation gratuite de 15 minutes se termine ici.</b> Merci pour votre confiance. Retenez bien mes conseils, et au moindre signe de danger, allez au poste de santé. Vous pouvez reprendre le <b>suivi avec moi</b> toute la semaine, et consulter un autre spécialiste dès la semaine prochaine. Appuyez sur 📋 pour garder le résumé de notre échange, à montrer à un soignant.";
+  addMsg('bot',msg);persist('assistant',msg.replace(/<[^>]+>/g,''),msg);
+  if(current)speak(msg,current);
+}
 
 /* ---------- Synthèse vocale : voix assortie au SEXE et à l'ÂGE de chaque médecin ---------- */
 let frVoice=null, voicesFR={f:[],m:[]};
@@ -746,7 +808,8 @@ function speak(text,doc,onDone){
 /* ---------- Reconnaissance vocale (micro à états + vu-mètre + envoi garanti) ---------- */
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
 const IS_EDGE=navigator.userAgent.includes('Edg/');
-let micGranted=false, meterStream=null, meterCtx=null, meterRAF=null, meterMax=0;
+let micGranted=false, meterStream=null, meterCtx=null, meterRAF=null, meterMax=0, srFails=0;
+const PLAN_B_MIC="✍️ <b>Solution garantie :</b> utilisez la dictée de votre CLAVIER — elle marche toujours. 📱 Sur téléphone : touchez la zone de texte, puis la touche <b>🎤 du clavier</b>. 💻 Sur PC : cliquez dans la zone de texte et appuyez sur <b>Windows + H</b>. Parlez : vos mots s'écrivent, puis appuyez sur ➤ pour envoyer.";
 if(SR){
   recog=new SR();recog.lang='fr-FR';recog.interimResults=true;recog.maxAlternatives=1;
   recog.onresult=e=>{
@@ -754,7 +817,7 @@ if(SR){
     for(const r of e.results){if(r.isFinal)final+=r[0].transcript;else interim+=r[0].transcript;}
     const inp=document.getElementById('chatText');
     if(interim&&!final){inp.value=interim;inp.classList.add('interim');}
-    if(final){inp.value=final;inp.classList.remove('interim');stopMicUI();try{recog.abort();}catch(_){ }sendMsg();}
+    if(final){srFails=0;inp.value=final;inp.classList.remove('interim');stopMicUI();try{recog.abort();}catch(_){ }sendMsg();}
   };
   recog.onend=()=>{
     /* GARANTIE : si on a entendu quelque chose mais que le "final" n'est jamais venu, on l'envoie quand même */
@@ -773,11 +836,16 @@ if(SR){
     }else if(err==='audio-capture'){
       addMsg('bot',"🎤 Aucun microphone détecté sur cet appareil. Branchez ou activez un micro, puis réessayez.");
     }else if(err==='no-speech'){
+      srFails++;
       if(meterMax<0.015){
         addMsg('bot',"🎤 Je n'ai capté <b>aucun son</b> : votre micro semble coupé. Vérifiez : la touche « muet » du casque, puis Windows → Paramètres → Système → Son → vérifiez que le bon micro est choisi et que son volume n'est pas à zéro. La petite barre rouge doit bouger quand vous parlez.");
       }else{
         addMsg('bot',"🎤 Je vous ai entendu, mais je n'ai pas reconnu de mots. Parlez un peu plus fort, plus près et plus lentement, puis réessayez.");
       }
+      if(srFails>=2){srFails=0;addMsg('bot',PLAN_B_MIC);}
+    }else{
+      /* toute autre erreur inconnue : proposer directement le plan B */
+      srFails++;if(srFails>=2){srFails=0;addMsg('bot',PLAN_B_MIC);}
     }
   };
 }
@@ -840,8 +908,11 @@ function toggleConvo(){
 
 /* ---------- Chat ---------- */
 function histKey(){return 'ndimbal_hist_'+current.id;}
-function startChat(i,withVoice){
-  current=DOCTORS[i];history=[];pendingImage=null;
+function startChat(i,withVoice,force){
+  const d=DOCTORS[i];
+  if(!force&&!quotaAllows(d.id)){showQuotaModal();return;}
+  current=d;history=[];pendingImage=null;pendingPdf=null;
+  startConsultTimer();
   document.getElementById('attachBtn').classList.remove('has');
   document.getElementById('chatAvatar').innerHTML=avatarHTML(current);
   document.getElementById('chatName').textContent=current.name;
@@ -862,7 +933,9 @@ function startChat(i,withVoice){
   addMsg('bot',greet);
   speak(greet,current,()=>{if((withVoice||autoConvo)&&recog)startMic();});
 }
-function closeChat(){document.getElementById('chatOverlay').classList.remove('open');speechSynthesis.cancel();if(recognizing){recog.abort();stopMicUI();}}
+function closeChat(){document.getElementById('chatOverlay').classList.remove('open');speechSynthesis.cancel();
+  clearInterval(consultTimer);document.getElementById('consultTimer').textContent='';
+  if(recognizing){recog.abort();stopMicUI();}}
 function clearConvo(){localStorage.removeItem(histKey());history=[];document.getElementById('chatMsgs').innerHTML='';
   const greet=LANG==='wo'&&current.greetingWo?current.greetingWo:current.greeting;addMsg('bot',greet);}
 function toggleVoice(){voiceOn=!voiceOn;const b=document.getElementById('voiceToggle');
@@ -934,14 +1007,21 @@ async function sendMsg(){
   /* 1. signes de danger — priorité absolue */
   if(text)for(const f of RED_FLAGS){
     if(f.re.test(text)){
-      const alert=RED_ALERT.replace('{X}',f.msg);
+      const alert=(LANG==='wo'?RED_ALERT_WO:RED_ALERT).replace('{X}',f.msg);
       addMsg('alert',alert);persist('assistant',alert.replace(/<[^>]+>/g,''),alert,true);
       speak(alert,current);
       history.push({role:'assistant',content:alert.replace(/<[^>]+>/g,'')});
       return;
     }
   }
-  /* 2. Claude API si clé, sinon moteur démo */
+  /* 2. consultation terminée ? (les alertes d'urgence, elles, passent toujours au-dessus) */
+  if(consultEnded){
+    const closed="⏱ La consultation gratuite est terminée. Reprenez le suivi avec moi cette semaine, ou consultez un autre spécialiste dès la semaine prochaine. 🚨 En cas d'urgence : poste de santé le plus proche ou SAMU 1515 — l'urgence n'attend jamais.";
+    addMsg('bot',closed);speak(closed,current);
+    return;
+  }
+  markQuota();
+  /* 3. Claude API si clé, sinon moteur démo */
   const key=getApiKey();
   showTyping();
   let reply;
@@ -962,18 +1042,19 @@ async function sendMsg(){
 }
 
 function demoReply(text){
-  for(const [re,rep] of current.demo){if(re.test(text))return rep;}
+  const woNote=LANG==='wo'?WO_DEMO_NOTE:'';
+  for(const [re,rep] of current.demo){if(re.test(text))return woNote+rep;}
   const fallbacks=[
    "Je vous écoute. Pour bien vous aider, donnez-moi un détail de plus : depuis quand cela dure-t-il, et est-ce que cela s'aggrave ?",
    "Merci pour votre confiance. En mode démonstration, je connais surtout les cas les plus fréquents — essayez les boutons de suggestion ci-dessus, ou reformulez avec des mots simples. Et si vous êtes inquiet : le poste de santé reste votre meilleur allié.",
    "Je comprends. Dites-m'en un peu plus : est-ce que cela concerne un adulte ou un enfant ? Depuis combien de temps ? Y a-t-il de la fièvre ?"
   ];
-  return fallbacks[Math.floor(Math.random()*fallbacks.length)];
+  return woNote+fallbacks[Math.floor(Math.random()*fallbacks.length)];
 }
 
 /* ---------- Connexion Claude API (texte + vision + PDF + profil patient) ---------- */
 async function askClaude(key,text,imgB64,pdfB64){
-  const msgs=history.slice(0,-1).slice(-10).map(m=>({role:m.role,content:m.content}));
+  const msgs=history.slice(0,-1).slice(-16).map(m=>({role:m.role,content:m.content}));
   let userContent;
   if(imgB64){
     userContent=[{type:'image',source:{type:'base64',media_type:'image/jpeg',data:imgB64}},
@@ -997,6 +1078,31 @@ async function askClaude(key,text,imgB64,pdfB64){
 }
 
 function escapeHTML(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+
+/* ---------- Résumé de consultation pour un VRAI soignant ---------- */
+function caregiverSummary(){
+  if(!current)return;
+  const p=loadProfile();
+  const pf=[];
+  if(p.name)pf.push("Prénom : "+p.name);if(p.age)pf.push("Âge : "+p.age+" ans");
+  if(p.sex)pf.push("Sexe : "+p.sex);if(p.weight)pf.push("Poids : "+p.weight+" kg");
+  if(p.preg)pf.push("Grossesse : "+p.preg);if(p.region)pf.push("Lieu : "+p.region);
+  if(p.chronic)pf.push("Maladies connues : "+p.chronic);if(p.allergy)pf.push("Allergies : "+p.allergy);
+  if(p.meds)pf.push("Médicaments : "+p.meds);
+  let s="RÉSUMÉ DE CONSULTATION — NDIMBAL SANTÉ\n(à montrer à un professionnel de santé)\n";
+  s+="Date : "+new Date().toLocaleString('fr-FR')+"\n";
+  s+="Spécialiste IA consulté : "+current.name+" — "+current.spec+"\n";
+  s+="PATIENT : "+(pf.length?pf.join(" · "):"profil non renseigné")+"\n";
+  s+="\n=== ÉCHANGES ===\n";
+  history.forEach(m=>{s+=(m.role==='user'?"PATIENT : ":"MÉDECIN IA : ")+m.content+"\n\n";});
+  s+="⚠️ Document généré par une IA d'orientation (Ndimbal Santé). Il ne constitue PAS un diagnostic médical : seul un professionnel de santé peut interpréter et décider.";
+  window._lastSummary=s;
+  addMsg('bot','<div style="white-space:pre-wrap;font-size:.84rem;max-height:220px;overflow-y:auto">'+escapeHTML(s)+'</div>');
+  addMsg('bot','📋 Ce résumé est prêt à être montré à un soignant. <button class="s-chip" onclick="shareWA(window._lastSummary)">📤 Envoyer sur WhatsApp</button> <button class="s-chip" onclick="copySummary(this)">📑 Copier</button>');
+}
+function copySummary(btn){
+  navigator.clipboard.writeText(window._lastSummary||'').then(()=>{btn.textContent='✅ Copié';},()=>{btn.textContent='❌ Impossible';});
+}
 
 /* ---------- Trouver un centre de santé ---------- */
 function findCenter(){
