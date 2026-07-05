@@ -325,7 +325,7 @@
       </div>
     </div>
     <div class="chat-msgs" id="chatMsgs"></div>
-    <div class="listen-banner" id="listenBanner"><span class="rec"></span><span data-i="listening">Je vous écoute… parlez maintenant.</span><span class="mic-meter"><i id="micLevel"></i></span></div>
+    <div class="listen-banner" id="listenBanner"><span class="rec"></span><span data-i="listening">Je vous écoute… parlez. Pause de 2 s ou appui sur 🎤 = j'envoie.</span><span class="mic-meter"><i id="micLevel"></i></span></div>
     <div class="chips-row" id="chipsRow"></div>
     <div class="chat-input">
       <button class="mic-btn" id="micBtn" onclick="toggleMic()" title="Appuyez et parlez">🎤</button>
@@ -446,13 +446,30 @@ const I18N={
   foot_find:"Wut postu santé bu jege",
   listening:"Maa ngi lay déglu… waxal léegi, man maa yor li des."}
 };
+const LANG_ORDER=['fr','wo','pu','se'];
+const LANG_NAMES={fr:'Français',wo:'Wolof',pu:'Pulaar',se:'Sérère'};
 let LANG=localStorage.getItem('ndimbal_lang')||'fr';
+if(!LANG_ORDER.includes(LANG))LANG='fr';
 function applyLang(){
-  document.querySelectorAll('[data-i]').forEach(el=>{const k=el.getAttribute('data-i');if(I18N[LANG][k])el.innerHTML=I18N[LANG][k];});
-  document.getElementById('langBtn').textContent=LANG==='fr'?'Wolof 🇸🇳':'Français 🇫🇷';
-  document.documentElement.lang=LANG;
+  const dict=I18N[LANG]||I18N.fr;
+  document.querySelectorAll('[data-i]').forEach(el=>{const k=el.getAttribute('data-i');if(dict[k])el.innerHTML=dict[k];else if(I18N.fr[k])el.innerHTML=I18N.fr[k];});
+  document.getElementById('langBtn').textContent='🌍 '+LANG_NAMES[LANG];
+  document.documentElement.lang=LANG==='fr'?'fr':LANG;
 }
-function toggleLang(){LANG=LANG==='fr'?'wo':'fr';localStorage.setItem('ndimbal_lang',LANG);applyLang();}
+function toggleLang(){
+  LANG=LANG_ORDER[(LANG_ORDER.indexOf(LANG)+1)%LANG_ORDER.length];
+  localStorage.setItem('ndimbal_lang',LANG);applyLang();
+  if(LANG!=='fr')showToast("🌍 Consultations en "+LANG_NAMES[LANG]+" (avec l'IA activée). 🔊 La voix reste française pour l'instant : aucune voix "+LANG_NAMES[LANG].toLowerCase()+" n'existe encore sur les téléphones — c'est dans notre feuille de route.");
+}
+/* petit toast d'information */
+function showToast(html){
+  let t=document.getElementById('ndToast');
+  if(!t){t=document.createElement('div');t.id='ndToast';
+    t.style.cssText='position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:300;background:var(--surface2);border:1px solid var(--gold);border-radius:14px;padding:14px 20px;max-width:min(480px,90vw);font-size:.9rem;color:var(--text);box-shadow:0 12px 32px rgba(0,0,0,.5)';
+    document.body.appendChild(t);}
+  t.innerHTML=html;t.style.display='block';
+  clearTimeout(t._to);t._to=setTimeout(()=>{t.style.display='none';},7000);
+}
 
 /* ---------- Générateur d'avatars vectoriels (secours si pas de photo) ---------- */
 function avatarSVG(a){
@@ -680,6 +697,17 @@ const RED_FLAGS=[
 const RED_ALERT="🚨 <b>URGENCE — Écoutez-moi bien.</b> Ce que vous décrivez ({X}) est un signe de danger grave. Il faut aller au poste de santé, au centre de santé ou à l'hôpital le plus proche <b>MAINTENANT</b>, sans attendre. Faites-vous accompagner. Si la personne est inconsciente, allongez-la sur le côté. Ne donnez rien à boire ni à manger. Partez tout de suite — chaque minute compte.<br><br>📞 <b>Numéros d'urgence au Sénégal :</b> SAMU <a href='tel:1515' style='color:#ffd9d5'>1515</a> · Pompiers <a href='tel:18' style='color:#ffd9d5'>18</a>";
 const RED_ALERT_WO="🚨 <b>JAMP LA — dégluleen bu baax.</b> Li nga wax dafa mëna doon musiba bu réy. Demal ci postu santé bi walla lopitaal bi gën a jege <b>LÉEGI LÉEGI</b>, bul xaar. Na la kenn gunge. Su nit ki xamatul dara, tëralal ko ci wetam. Bul ko jox ndox, bul ko jox lekk. Demleen léegi — saa su nekk am na solo.<br><br>📞 <b>Nimero yu jamp ci Senegaal :</b> SAMU <a href='tel:1515' style='color:#ffd9d5'>1515</a> · Sapëer <a href='tel:18' style='color:#ffd9d5'>18</a>";
 const WO_DEMO_NOTE="🇸🇳 <i>Ci mode démonstration bi, tontu yu matale yi ci français lañu bind. Su kilifa gi defee lëkkalekaay IA bi (⚙️), doktoor yi dinañu la tontu ci wolof bu leer.</i><br><br>";
+const DEMO_NOTES={
+ wo:WO_DEMO_NOTE,
+ pu:"🇸🇳 <i>En mode démonstration, les réponses détaillées sont en français. Dès l'activation de l'IA, je vous répondrai en pulaar.</i><br><br>",
+ se:"🇸🇳 <i>En mode démonstration, les réponses détaillées sont en français. Dès l'activation de l'IA, je vous répondrai en sérère.</i><br><br>"
+};
+/* Langue des RÉPONSES des médecins (mode IA) */
+const LANG_RULES={
+ wo:" L'utilisateur a choisi le wolof : réponds en wolof simple (alphabet latin), en expliquant les mots médicaux, avec si besoin les termes français entre parenthèses.",
+ pu:" L'utilisateur a choisi le pulaar (peul) : réponds en pulaar simple (alphabet latin), en expliquant les mots médicaux, avec les termes français entre parenthèses quand c'est utile. Si tu n'es pas sûr d'un mot pulaar, mets aussi le français.",
+ se:" L'utilisateur a choisi le sérère : réponds en sérère simple (alphabet latin), en expliquant les mots médicaux, avec les termes français entre parenthèses quand c'est utile. Si tu n'es pas sûr d'un mot sérère, mets aussi le français."
+};
 
 /* ---------- Rendu équipe + campagnes ---------- */
 const grid=document.getElementById('teamGrid');
@@ -810,21 +838,29 @@ const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
 const IS_EDGE=navigator.userAgent.includes('Edg/');
 let micGranted=false, meterStream=null, meterCtx=null, meterRAF=null, meterMax=0, srFails=0;
 const PLAN_B_MIC="✍️ <b>Solution garantie :</b> utilisez la dictée de votre CLAVIER — elle marche toujours. 📱 Sur téléphone : touchez la zone de texte, puis la touche <b>🎤 du clavier</b>. 💻 Sur PC : cliquez dans la zone de texte et appuyez sur <b>Windows + H</b>. Parlez : vos mots s'écrivent, puis appuyez sur ➤ pour envoyer.";
+let finalBuf='', interimBuf='', silenceTO=null;
 if(SR){
-  recog=new SR();recog.lang='fr-FR';recog.interimResults=true;recog.maxAlternatives=1;
+  recog=new SR();recog.lang='fr-FR';recog.continuous=true;recog.interimResults=true;recog.maxAlternatives=1;
+  /* MODE CONTINU : on accumule TOUT ce qui est dit (même en plusieurs phrases),
+     et on n'envoie qu'après une pause de ~2,3 s ou un appui sur le micro. */
   recog.onresult=e=>{
-    let final='',interim='';
-    for(const r of e.results){if(r.isFinal)final+=r[0].transcript;else interim+=r[0].transcript;}
+    finalBuf='';interimBuf='';
+    for(const r of e.results){if(r.isFinal)finalBuf+=r[0].transcript+' ';else interimBuf+=r[0].transcript;}
     const inp=document.getElementById('chatText');
-    if(interim&&!final){inp.value=interim;inp.classList.add('interim');}
-    if(final){srFails=0;inp.value=final;inp.classList.remove('interim');stopMicUI();try{recog.abort();}catch(_){ }sendMsg();}
+    inp.value=(finalBuf+interimBuf).trim();
+    inp.classList.add('interim');
+    clearTimeout(silenceTO);
+    silenceTO=setTimeout(()=>{if(recognizing&&(finalBuf+interimBuf).trim()){try{recog.stop();}catch(_){ }}},2300);
   };
   recog.onend=()=>{
-    /* GARANTIE : si on a entendu quelque chose mais que le "final" n'est jamais venu, on l'envoie quand même */
+    /* GARANTIE : tout ce qui a été entendu — finalisé OU non — est envoyé */
+    clearTimeout(silenceTO);
+    const said=(finalBuf+' '+interimBuf).trim();
+    finalBuf='';interimBuf='';
     const inp=document.getElementById('chatText');
-    const heard=inp.classList.contains('interim')&&inp.value.trim().length>1;
     stopMicUI();
-    if(heard){inp.classList.remove('interim');sendMsg();}
+    inp.classList.remove('interim');
+    if(said.length>1){srFails=0;inp.value=said;sendMsg();}
   };
   recog.onerror=e=>{
     const err=e.error;
@@ -890,14 +926,14 @@ async function startMic(){
       return;
     }
   }
-  recognizing=true;
+  recognizing=true;finalBuf='';interimBuf='';
   document.getElementById('micBtn').classList.add('listening');
   document.getElementById('listenBanner').classList.add('on');
   try{recog.start();}catch(e){stopMicUI();}
 }
 function toggleMic(){
-  if(!recog){addMsg('bot',"Le micro n'est pas disponible sur ce navigateur. Utilisez <b>Google Chrome</b> — ou écrivez votre question, je vous répondrai pareil.");return;}
-  if(recognizing){try{recog.stop();}catch(_){ }stopMicUI();return;}
+  if(!recog){addMsg('bot',"Le micro n'est pas disponible sur ce navigateur. Utilisez <b>Google Chrome</b> — ou écrivez votre question, je vous répondrai pareil. "+PLAN_B_MIC);return;}
+  if(recognizing){try{recog.stop();}catch(_){ }return;} /* l'arrêt manuel ENVOIE ce qui a été entendu (via onend) */
   startMic();
 }
 function toggleConvo(){
@@ -987,7 +1023,18 @@ function handleFile(input){
     pendingImage=cv.toDataURL('image/jpeg',.85).split(',')[1];pendingPdf=null;
     document.getElementById('attachBtn').classList.add('has');
     addMsg('user',`📷 Photo prête à envoyer :<img class="att" src="data:image/jpeg;base64,${pendingImage}" alt="photo envoyée">`);
-    addMsg('bot',"J'ai bien reçu votre photo. Ajoutez un mot d'explication si vous voulez (ex : « c'est mon ordonnance », « c'est sur mon bras depuis 2 semaines »), puis envoyez.");
+    /* contrôle qualité : photo trop sombre = illisible pour tout le monde */
+    let lum=128;
+    try{
+      const px=cv.getContext('2d').getImageData(0,0,cv.width,cv.height).data;
+      let sum=0,n=0;for(let i=0;i<px.length;i+=4*101){sum+=(px[i]+px[i+1]+px[i+2])/3;n++;}
+      lum=sum/n;
+    }catch(e){}
+    if(lum<48){
+      addMsg('bot',"📷 Votre photo est <b>très sombre</b> — elle sera difficile à lire. Reprenez-la en pleine lumière du jour (près d'une fenêtre ou dehors), bien à plat et sans ombre, puis renvoyez-la.");
+    }else{
+      addMsg('bot',"J'ai bien reçu votre photo, elle est nette. Ajoutez un mot d'explication si vous voulez (ex : « c'est mon ordonnance », « c'est sur mon bras depuis 2 semaines »), puis envoyez.");
+    }
     URL.revokeObjectURL(img.src);
   };
   img.onerror=()=>{addMsg('bot',"Je n'ai pas réussi à lire cette image. Réessayez avec une photo JPG ou PNG.");URL.revokeObjectURL(img.src);};
@@ -1030,7 +1077,9 @@ async function sendMsg(){
     catch(e){reply="(Connexion à l'IA impossible : "+escapeHTML(e.message)+" — je passe en mode démonstration.)<br><br>"+demoReply(text||'photo');}
   }else if(img||pdf){
     await new Promise(r=>setTimeout(r,600));
-    reply="J'aimerais beaucoup analyser votre photo, mais l'analyse d'images demande la <b>connexion IA</b>. Demandez à la personne qui gère l'application d'activer la clé (bouton ⚙️ en haut de la page). En attendant, décrivez-moi ce que vous voyez avec vos mots, je vous aiderai autrement.";
+    hideTyping();
+    offerGuide();
+    return;
   }else{
     await new Promise(r=>setTimeout(r,700+Math.random()*600));
     reply=demoReply(text);
@@ -1042,7 +1091,7 @@ async function sendMsg(){
 }
 
 function demoReply(text){
-  const woNote=LANG==='wo'?WO_DEMO_NOTE:'';
+  const woNote=DEMO_NOTES[LANG]||'';
   for(const [re,rep] of current.demo){if(re.test(text))return woNote+rep;}
   const fallbacks=[
    "Je vous écoute. Pour bien vous aider, donnez-moi un détail de plus : depuis quand cela dure-t-il, et est-ce que cela s'aggrave ?",
@@ -1069,7 +1118,7 @@ async function askClaude(key,text,imgB64,pdfB64){
     headers:{'Content-Type':'application/json','x-api-key':key,
       'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
     body:JSON.stringify({model:'claude-sonnet-5',max_tokens:800,
-      system:current.system+(KNOWLEDGE[current.id]||'')+CONSULT_METHOD+profileText()+VISION_RULES+(LANG==='wo'?WOLOF_RULES:" Réponds en français simple.")+" Réponds en 4 à 8 phrases courtes maximum (ta réponse sera lue à voix haute). Termine par une question ou un conseil d'action clair.",
+      system:current.system+(KNOWLEDGE[current.id]||'')+CONSULT_METHOD+profileText()+VISION_RULES+(LANG_RULES[LANG]||" Réponds en français simple.")+" Réponds en 4 à 8 phrases courtes maximum (ta réponse sera lue à voix haute). Termine par une question ou un conseil d'action clair.",
       messages:msgs})
   });
   if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e.error?.message||('erreur '+res.status));}
@@ -1078,6 +1127,38 @@ async function askClaude(key,text,imgB64,pdfB64){
 }
 
 function escapeHTML(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+
+/* ---------- Analyse GUIDÉE des documents (mode sans IA) ---------- */
+const GUIDE_DOC={
+ "💊 Ordonnance":"Très bien, regardons votre ordonnance ensemble, ligne par ligne. Pour chaque médicament, cherchez 4 choses : 1) le NOM (souvent le premier mot en majuscules), 2) le DOSAGE (le chiffre avec mg ou g), 3) la FRÉQUENCE (« 3x/j » veut dire 3 fois par jour ; « matin et soir » = 2 fois), 4) la DURÉE (« pdt 7 j » = pendant 7 jours). Dictez-moi ou écrivez le nom d'un médicament et ses chiffres : je vous explique à quoi il sert et comment bien le prendre. 💡 À la pharmacie, demandez toujours « le générique » — même médicament, moins cher. Et ne doublez JAMAIS une dose oubliée.",
+ "🩻 Radio / IRM / Écho":"Je dois être honnête avec vous : une radio, une IRM ou une échographie ne peut pas être interprétée à l'œil nu — il faut l'analyse d'imagerie de la connexion IA, ou mieux : le médecin qui l'a prescrite. En attendant, deux choses très utiles : 1) Si un COMPTE-RENDU écrit accompagne l'image, dictez-moi ses mots compliqués un par un — je vous les traduis en langage simple. 2) Gardez précieusement le film ou le CD original et montrez-le au médecin prescripteur : lui seul connaît votre dossier complet. Y a-t-il un compte-rendu avec des mots que vous ne comprenez pas ?",
+ "🧴 Peau ou plaie":"D'accord, examinons cela ensemble. Décrivez-moi ce que montre votre photo, avec vos mots : 1) De quelle COULEUR est la lésion (rouge, claire, foncée, blanche) ? 2) Est-ce que ça GRATTE, surtout la nuit ? 3) Depuis COMBIEN DE TEMPS ? 4) Est-ce que ça S'ÉTEND ou d'autres personnes de la maison ont pareil ? 5) Y a-t-il du PUS ou une plaie qui ne guérit pas ? Répondez à ces questions et je vous orienterai précisément.",
+ "📕 Carnet de santé":"Le carnet, c'est le trésor de santé de votre enfant ! Ouvrez la page des VACCINATIONS et vérifions ensemble : à la NAISSANCE il doit y avoir BCG et polio ; à 6, 10 et 14 SEMAINES trois lignes penta + polio + pneumo ; à 9 MOIS rougeole et fièvre jaune. Dites-moi : quelles lignes ont une date et un tampon, et lesquelles sont vides ? S'il manque des doses, pas de panique : le rattrapage est GRATUIT au poste de santé. Regardez aussi les courbes de poids : est-ce que la ligne monte régulièrement ?",
+ "🩸 Analyses de sang":"Regardons vos résultats ensemble. Dictez-moi ou écrivez le NOM d'une ligne et son CHIFFRE (avec la valeur « normale » entre parenthèses si elle y est). Les plus courantes : NFS = l'état de votre sang (l'hémoglobine basse = anémie) ; GLYCÉMIE = le sucre (à jeun, au-dessus de 1,26 g/L deux fois = diabète possible) ; CRÉATININE = les reins ; GE/TDR = le paludisme. ⚠️ Un seul chiffre ne fait jamais un diagnostic : c'est l'ensemble, interprété par un soignant, qui compte. Quelle ligne vous inquiète ?",
+ "📄 Autre document":"D'accord. Dites-moi en une phrase ce que c'est (certificat, compte-rendu d'hôpital, résultat d'examen…) et dictez-moi les mots ou les chiffres que vous ne comprenez pas : je vous les explique un par un, en langage simple. Et gardez toujours l'original pour le montrer au soignant."
+};
+function offerGuide(){
+  const note=DEMO_NOTES[LANG]||'';
+  addMsg('bot',note+"J'ai bien reçu votre document 📷. En mode actuel, je vous propose une <b>analyse guidée</b> : dites-moi ce que c'est, et je vous guide point par point. <i>(La lecture automatique de l'image par l'IA s'activera au déploiement.)</i>");
+  const chips=document.getElementById('chipsRow');chips.innerHTML='';
+  Object.keys(GUIDE_DOC).forEach(k=>{
+    const b=document.createElement('button');b.className='s-chip';b.textContent=k;
+    b.onclick=()=>{
+      addMsg('user',escapeHTML(k));history.push({role:'user',content:k});
+      const rep=GUIDE_DOC[k];
+      addMsg('bot',rep);persist('assistant',rep,rep);
+      history.push({role:'assistant',content:rep});
+      speak(rep,current);
+      restoreChips();
+    };
+    chips.appendChild(b);
+  });
+}
+function restoreChips(){
+  const chips=document.getElementById('chipsRow');chips.innerHTML='';
+  current.chips.forEach(c=>{const b=document.createElement('button');b.className='s-chip';b.textContent=c;
+    b.onclick=()=>{document.getElementById('chatText').value=c.replace(' 📷','');sendMsg();};chips.appendChild(b);});
+}
 
 /* ---------- Résumé de consultation pour un VRAI soignant ---------- */
 function caregiverSummary(){
