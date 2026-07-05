@@ -1,5 +1,6 @@
 # 💰 NDIMBAL SANTÉ — Plan de monétisation & stratégie
 *Rédigé le 2 juillet 2026 — Samba & Claude, associés fondateurs*
+*Complément : voir [rapport-strategique.md](rapport-strategique.md) — simulation client, grille tarifaire SaaS détaillée (Bronze/Argent/Or) et flotte d'agents IA opérationnels.*
 
 ## Le principe sacré (à ne jamais trahir)
 > **Le patient pauvre ne paie JAMAIS.** Si on fait payer celui qui a renoncé aux soins faute d'argent, on recrée exactement la barrière qu'on veut détruire. La monétisation vient TOUJOURS d'ailleurs. C'est aussi notre meilleur argument marketing : « gratuit pour le patient, pour toujours ».
