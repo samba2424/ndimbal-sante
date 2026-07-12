@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ndimbal Santé — Dossier de présentation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#0b1512;--surface:#12201b;--surface2:#182b24;--line:#23372f;--gold:#e8b44f;--gold-soft:#f3cf8a;
+    --emerald:#2fbf8f;--text:#f2efe6;--muted:#a8b8ae;--danger:#ff6b5e}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;overflow:hidden}
+  h1,h2,h3{font-family:'Outfit',sans-serif}
+  .deck{height:100vh;height:100dvh;position:relative}
+  .slide{position:absolute;inset:0;display:none;flex-direction:column;justify-content:center;align-items:center;
+    padding:6vh 7vw;text-align:center;overflow-y:auto}
+  .slide.active{display:flex;animation:sIn .45s cubic-bezier(.2,.9,.3,1)}
+  @keyframes sIn{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+  .kicker{color:var(--gold);font-weight:700;font-size:.85rem;letter-spacing:.22em;text-transform:uppercase;margin-bottom:18px}
+  h1{font-size:clamp(2rem,5.2vw,3.6rem);font-weight:800;line-height:1.12;max-width:900px}
+  h2{font-size:clamp(1.5rem,3.6vw,2.4rem);font-weight:800;line-height:1.15;max-width:860px;margin-bottom:22px}
+  .grad{background:linear-gradient(100deg,var(--gold-soft),var(--gold) 40%,var(--emerald));-webkit-background-clip:text;background-clip:text;color:transparent}
+  p.lead{color:var(--muted);font-size:clamp(1rem,1.7vw,1.2rem);max-width:720px;line-height:1.65;margin-top:14px}
+  p.lead b{color:var(--text)}
+  .logo-mark{width:64px;height:64px;border-radius:18px;background:linear-gradient(135deg,var(--emerald),var(--gold));
+    display:grid;place-items:center;font-size:1.9rem;margin-bottom:26px}
+  .grid{display:grid;gap:16px;margin-top:30px;width:100%;max-width:960px}
+  .g3{grid-template-columns:repeat(3,1fr)}.g2{grid-template-columns:repeat(2,1fr)}.g4{grid-template-columns:repeat(4,1fr)}
+  .cardp{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:24px 18px;text-align:center}
+  .cardp .big{font-family:'Outfit';font-weight:800;font-size:clamp(1.6rem,3.4vw,2.6rem);color:var(--gold-soft);display:block;line-height:1.1}
+  .cardp .sm{color:var(--muted);font-size:.88rem;margin-top:8px;display:block;line-height:1.45}
+  .cardp.accent{border-color:rgba(232,180,79,.55)}
+  .cardp h3{font-size:1.02rem;margin:10px 0 6px;color:var(--text)}
+  .cardp .ic{font-size:1.7rem}
+  .docs{display:flex;gap:14px;justify-content:center;margin-top:26px;flex-wrap:wrap}
+  .doc{width:110px}
+  .doc img{width:100%;border-radius:18px;border:2px solid var(--line);display:block}
+  .doc span{display:block;font-size:.75rem;color:var(--muted);margin-top:6px}
+  table{border-collapse:collapse;margin:26px auto 0;width:100%;max-width:760px;font-size:clamp(.82rem,1.4vw,.98rem)}
+  th,td{padding:11px 14px;text-align:left;border-bottom:1px solid var(--line)}
+  th{color:var(--gold-soft);font-family:'Outfit';font-weight:700;font-size:.8rem;letter-spacing:.06em;text-transform:uppercase}
+  td:last-child,th:last-child{text-align:right;white-space:nowrap}
+  tr.total td{color:var(--gold-soft);font-weight:700;border-top:2px solid var(--gold);font-size:1.05em}
+  .quote{border-left:3px solid var(--gold);padding:6px 22px;max-width:760px;text-align:left;color:var(--muted);
+    font-size:clamp(1rem,1.8vw,1.25rem);line-height:1.7;font-style:italic;margin-top:10px}
+  .quote b{color:var(--text);font-style:normal}
+  .pill{display:inline-flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);
+    padding:9px 18px;border-radius:999px;font-size:.88rem;color:var(--gold-soft);margin:5px}
+  .nav{position:fixed;bottom:22px;left:0;right:0;display:flex;justify-content:center;align-items:center;gap:16px;z-index:10}
+  .nav button{width:46px;height:46px;border-radius:50%;border:1px solid var(--line);background:var(--surface);
+    color:var(--text);font-size:1.1rem;cursor:pointer;transition:.2s}
+  .nav button:hover{border-color:var(--gold);color:var(--gold)}
+  .nav .cnt{color:var(--muted);font-size:.85rem;font-variant-numeric:tabular-nums;min-width:56px;text-align:center}
+  .hintkeys{position:fixed;top:18px;right:22px;color:var(--muted);font-size:.75rem;opacity:.7}
+  .footer-tag{position:fixed;top:18px;left:22px;display:flex;align-items:center;gap:8px;font-family:'Outfit';font-weight:700;font-size:.9rem;opacity:.85}
+  .footer-tag i{width:26px;height:26px;border-radius:8px;background:linear-gradient(135deg,var(--emerald),var(--gold));display:grid;place-items:center;font-style:normal;font-size:.85rem}
+  ul.clean{list-style:none;max-width:720px;text-align:left;margin-top:20px}
+  ul.clean li{padding:11px 0 11px 38px;position:relative;color:var(--muted);font-size:clamp(.92rem,1.6vw,1.08rem);line-height:1.55;border-bottom:1px solid var(--line)}
+  ul.clean li b{color:var(--text)}
+  ul.clean li::before{content:'✦';position:absolute;left:8px;color:var(--gold)}
+  @media(max-width:720px){.g3,.g4{grid-template-columns:1fr 1fr}.slide{padding:9vh 6vw 12vh}}
+  @media print{
+    body{overflow:visible;background:#fff}
+    .deck{height:auto}
+    .slide{position:relative;display:flex!important;page-break-after:always;min-height:100vh}
+    .nav,.hintkeys{display:none}
+  }
+</style>
+</head>
+<body>
+<div class="footer-tag"><i>🩺</i>Ndimbal Santé</div>
+<div class="hintkeys">◀ ▶ ou Espace pour naviguer</div>
+<div class="deck" id="deck">
+
+<!-- 1. TITRE -->
+<section class="slide active">
+  <div class="logo-mark">🩺</div>
+  <div class="kicker">Dossier de présentation · Partenariat institutionnel</div>
+  <h1>Dix médecins spécialistes<br><span class="grad">dans chaque téléphone du Sénégal.</span></h1>
+  <p class="lead">Ndimbal Santé — « l'aide », en wolof. Une équipe médicale d'intelligence artificielle, <b>gratuite pour le patient</b>, qui parle et écoute <b>en français et en wolof</b>, et oriente vers les structures de santé. <b>Déjà en ligne. Déjà fonctionnelle.</b></p>
+  <div style="margin-top:26px"><span class="pill">🇸🇳 100 % sénégalais</span><span class="pill">🔊 Vocal — conçu pour tous</span><span class="pill">🌍 En ligne : samba2424.github.io/ndimbal-sante</span></div>
+</section>
+
+<!-- 2. LE PROBLÈME -->
+<section class="slide">
+  <div class="kicker">Le problème</div>
+  <h2>Le spécialiste est à 300 km.<br>La consultation coûte un mois de revenu.</h2>
+  <div class="grid g3">
+    <div class="cardp"><span class="big">1 / 500 000</span><span class="sm">psychiatre par habitant en Afrique subsaharienne</span></div>
+    <div class="cardp"><span class="big">80 %</span><span class="sm">des Africains paient leurs soins directement de leur poche</span></div>
+    <div class="cardp"><span class="big">6,1 M</span><span class="sm">de soignants manqueront en Afrique d'ici 2030 (OMS)</span></div>
+    <div class="cardp"><span class="big">70 %</span><span class="sm">des décès maternels mondiaux ont lieu en Afrique subsaharienne</span></div>
+    <div class="cardp"><span class="big">46 %</span><span class="sm">des adultes africains hypertendus — la plupart sans le savoir</span></div>
+    <div class="cardp"><span class="big">150 M</span><span class="sm">de personnes ruinées chaque année par des dépenses de santé</span></div>
+  </div>
+</section>
+
+<!-- 3. LA CONSÉQUENCE HUMAINE -->
+<section class="slide">
+  <div class="kicker">Ce que cela signifie</div>
+  <div class="quote">« Un enfant qui convulse dans un village du Fouta a statistiquement plus de chances de voir un guérisseur qu'un pédiatre — <b>non par choix, mais parce que le pédiatre est à 400 km et coûte un mois de revenu.</b> »<br><br>Entre « rien » et « l'hôpital », il manque un maillon.<br><b>Ndimbal Santé est ce maillon.</b></div>
+</section>
+
+<!-- 4. LA SOLUTION -->
+<section class="slide">
+  <div class="kicker">La solution — déjà construite</div>
+  <h2>Une équipe de 10 spécialistes IA,<br>incarnés, qui parlent et écoutent.</h2>
+  <div class="docs">
+    <div class="doc"><img src="avatars/1.webp" alt="Dr Aminata Diallo"><span>Médecine générale</span></div>
+    <div class="doc"><img src="avatars/2.webp" alt="Dr Fatou Ndiaye"><span>Pédiatrie</span></div>
+    <div class="doc"><img src="avatars/3.webp" alt="Dr Mariama Bâ"><span>Gynécologie</span></div>
+    <div class="doc"><img src="avatars/4.webp" alt="Dr Ousmane Sarr"><span>Cardiologie</span></div>
+    <div class="doc"><img src="avatars/7.webp" alt="Dr Moussa Diop"><span>Santé mentale</span></div>
+  </div>
+  <p class="lead">+ infectiologie, dermatologie, ophtalmologie, nutrition, pharmacie.<br>Chaque spécialiste suit une <b>méthode de consultation encadrée</b> et les protocoles <b>OMS / PCIME / PNLP</b>.</p>
+</section>
+
+<!-- 5. CE QUI EXISTE DÉJÀ -->
+<section class="slide">
+  <div class="kicker">Pas une idée. Un produit.</div>
+  <h2>Tout cela fonctionne aujourd'hui.</h2>
+  <div class="grid g4">
+    <div class="cardp"><span class="ic">🎤</span><h3>Vocal intégral</h3><span class="sm">Le patient parle, le médecin répond à voix haute — conçu pour les personnes qui ne lisent pas</span></div>
+    <div class="cardp"><span class="ic">🌍</span><h3>4 langues</h3><span class="sm">Français, wolof — pulaar et sérère câblés</span></div>
+    <div class="cardp"><span class="ic">📷</span><h3>Documents médicaux</h3><span class="sm">Ordonnances, radios, carnets, analyses : photo ou PDF, analyse guidée</span></div>
+    <div class="cardp"><span class="ic">🚨</span><h3>Signes de danger</h3><span class="sm">Détection automatique → orientation immédiate + SAMU 1515</span></div>
+    <div class="cardp"><span class="ic">👤</span><h3>Carte Santé</h3><span class="sm">Profil médical personnel, données conservées dans le téléphone</span></div>
+    <div class="cardp"><span class="ic">📋</span><h3>Résumé soignant</h3><span class="sm">Chaque consultation exportable pour l'infirmier du poste de santé</span></div>
+    <div class="cardp"><span class="ic">📢</span><h3>Campagnes officielles</h3><span class="sm">CPS, moustiquaires, TPI, PEV — reliées à sante.gouv.sn</span></div>
+    <div class="cardp"><span class="ic">📱</span><h3>Ultra-léger</h3><span class="sm">Plus léger qu'une photo WhatsApp — pour les petits forfaits</span></div>
+  </div>
+</section>
+
+<!-- 6. L'ÉTHIQUE -->
+<section class="slide">
+  <div class="kicker">Le principe fondateur</div>
+  <h2>Orienter. <span class="grad">Jamais remplacer.</span></h2>
+  <ul class="clean">
+    <li><b>Aucun diagnostic définitif, aucune prescription.</b> L'application éduque, rassure et oriente vers les structures de santé — elle amène les patients aux soignants plus tôt, mieux préparés.</li>
+    <li><b>L'urgence d'abord :</b> tout signe de danger déclenche une consigne immédiate — poste de santé, SAMU 1515.</li>
+    <li><b>Souveraineté des données :</b> aujourd'hui, rien ne quitte le téléphone du patient. Demain : hébergement au Sénégal, conformité CDP (loi 2008-12) avant tout déploiement officiel.</li>
+    <li><b>Le patient vulnérable ne paie jamais.</b> C'est la règle irrévocable du projet.</li>
+  </ul>
+</section>
+
+<!-- 7. ALIGNEMENT -->
+<section class="slide">
+  <div class="kicker">Alignement avec les priorités nationales</div>
+  <h2>Un outil au service des politiques publiques</h2>
+  <table>
+    <tr><th>Priorité nationale</th><th>Apport de Ndimbal Santé</th></tr>
+    <tr><td>Couverture Sanitaire Universelle</td><td>Le premier contact gratuit, partout, 24h/24</td></tr>
+    <tr><td>Santé mère-enfant</td><td>Gynécologie + pédiatrie PCIME + relais CPN/TPI</td></tr>
+    <tr><td>Cardiopathies &amp; maladies chroniques</td><td>Dépistage HTA, éducation thérapeutique, signes AVC</td></tr>
+    <tr><td>Dépistage précoce (cancer…)</td><td>Orientation dès les premiers signes vers les centres</td></tr>
+    <tr><td>Lutte contre le paludisme</td><td>Campagnes CPS / MII / TPI intégrées et vocalisées</td></tr>
+    <tr><td>Inclusion (langues, analphabétisme)</td><td>Vocal wolof — unique en son genre</td></tr>
+  </table>
+</section>
+
+<!-- 8. LE PILOTE -->
+<section class="slide">
+  <div class="kicker">Notre proposition</div>
+  <h2>Un pilote officiel : 1 district, 6 mois, des résultats mesurables</h2>
+  <div class="grid g3">
+    <div class="cardp"><span class="ic">🏥</span><h3>Périmètre</h3><span class="sm">Un district sanitaire pilote (ex. Kolda ou Kaolack) — postes de santé + relais communautaires (Badiénou Gox)</span></div>
+    <div class="cardp"><span class="ic">🧪</span><h3>Validation</h3><span class="sm">Comité médical sénégalais de 10 spécialistes pour valider chaque contenu — sous l'égide du partenaire institutionnel</span></div>
+    <div class="cardp"><span class="ic">📊</span><h3>Indicateurs</h3><span class="sm">Consultations, justesse des orientations, urgences détectées, délais de prise en charge, satisfaction — évaluation indépendante</span></div>
+  </div>
+  <p class="lead">On n'étend <b>que sur résultats prouvés</b>. Le risque institutionnel est encadré ; l'impact est mesuré.</p>
+</section>
+
+<!-- 9. BUDGET -->
+<section class="slide">
+  <div class="kicker">Le financement demandé</div>
+  <h2>Phase pilote : <span class="grad">50 millions FCFA</span> sur 6 mois</h2>
+  <table>
+    <tr><th>Poste</th><th>Contenu</th><th>Budget</th></tr>
+    <tr><td>Validation médicale</td><td>Comité de 10 spécialistes sénégalais (vacations, revues de contenu)</td><td>8 M</td></tr>
+    <tr><td>Plateforme souveraine</td><td>Backend sécurisé hébergé au Sénégal, conformité CDP, comptes structures</td><td>12 M</td></tr>
+    <tr><td>Voix &amp; langues</td><td>Voix naturelles wolof, puis pulaar et sérère (enregistrements + synthèse)</td><td>7 M</td></tr>
+    <tr><td>Déploiement terrain</td><td>1 district : formation de 100 relais et infirmiers, supervision, supports</td><td>12 M</td></tr>
+    <tr><td>Évaluation indépendante</td><td>Protocole, collecte, analyse, rapport public</td><td>5 M</td></tr>
+    <tr><td>Coordination</td><td>Équipe projet et fonctionnement, 6 mois</td><td>6 M</td></tr>
+    <tr class="total"><td>Total phase pilote</td><td>≈ 76 000 € / 84 000 $</td><td>50 M FCFA</td></tr>
+  </table>
+  <p class="lead" style="margin-top:18px">Phase 2 — extension nationale (14 régions, 24 mois) : <b>350 M FCFA</b>, déclenchée uniquement sur les résultats du pilote.</p>
+</section>
+
+<!-- 10. DURABILITÉ -->
+<section class="slide">
+  <div class="kicker">La durabilité — après la subvention</div>
+  <h2>Un modèle qui ne dépend pas éternellement des dons</h2>
+  <ul class="clean">
+    <li><b>Gratuit pour les patients, pour toujours</b> — financé par ceux qui investissent déjà dans l'accès aux soins :</li>
+    <li><b>Abonnements des structures</b> (cliniques, hôpitaux, programmes) : de 100 000 à 2 000 000 FCFA/mois selon le niveau — payés par districts, ONG et mutuelles, jamais par les centres ruraux démunis.</li>
+    <li><b>Campagnes de prévention</b> financées par les programmes de santé publique — l'infrastructure de diffusion existe déjà dans l'application.</li>
+    <li><b>Partenariats télécoms</b> (accès gratuit en data — zero-rating) et version Pro pour les agents de santé.</li>
+    <li><b>Objectif :</b> autonomie financière opérationnelle à 24-30 mois.</li>
+  </ul>
+</section>
+
+<!-- 11. POURQUOI NOUS -->
+<section class="slide">
+  <div class="kicker">Pourquoi nous faire confiance</div>
+  <h2>Nous avons déjà fait la partie la plus dure : <span class="grad">construire.</span></h2>
+  <ul class="clean">
+    <li><b>Le produit est en ligne et testable en 30 secondes</b> — pas une promesse, une démonstration.</li>
+    <li><b>Une enquête documentée</b> (OMS, ministères, littérature) fonde chaque choix de conception.</li>
+    <li><b>Conçu pour nos réalités :</b> wolof vocal, poids plume, campagnes nationales intégrées, respect des soignants.</li>
+    <li><b>Un projet 100 % sénégalais</b>, sans dépendance étrangère, porté par une équipe locale et déterminée.</li>
+    <li><b>Une gouvernance claire proposée :</b> le partenaire institutionnel comme parrain et garant, Ndimbal comme opérateur technique — chacun son rôle.</li>
+  </ul>
+</section>
+
+<!-- 12. LA DEMANDE -->
+<section class="slide">
+  <div class="logo-mark">🤝</div>
+  <div class="kicker">Notre demande aujourd'hui</div>
+  <h1 style="font-size:clamp(1.7rem,4vw,2.9rem)">Un parrainage.<br>Un district pilote.<br><span class="grad">Six mois pour le prouver.</span></h1>
+  <p class="lead">Avec votre parrainage moral, une mise en relation avec le Ministère de la Santé, et le financement de la phase pilote (50 M FCFA), nous prouvons ensemble — chiffres à l'appui — que chaque Sénégalais peut avoir un premier contact médical de qualité, dans sa langue, gratuitement.</p>
+  <div style="margin-top:28px"><span class="pill">🌍 samba2424.github.io/ndimbal-sante</span><span class="pill">📱 Démonstration en direct sur simple demande</span></div>
+</section>
+
+</div>
+<div class="nav">
+  <button onclick="go(-1)" aria-label="Précédent">◀</button>
+  <span class="cnt" id="cnt">1 / 12</span>
+  <button onclick="go(1)" aria-label="Suivant">▶</button>
+</div>
+<script>
+const slides=[...document.querySelectorAll('.slide')];let cur=0;
+function show(i){
+  cur=Math.max(0,Math.min(slides.length-1,i));
+  slides.forEach((s,j)=>s.classList.toggle('active',j===cur));
+  document.getElementById('cnt').textContent=(cur+1)+' / '+slides.length;
+}
+function go(d){show(cur+d);}
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key===' '||e.key==='PageDown')go(1);
+  if(e.key==='ArrowLeft'||e.key==='PageUp')go(-1);
+});
+let tx=null;
+document.addEventListener('touchstart',e=>tx=e.touches[0].clientX);
+document.addEventListener('touchend',e=>{if(tx===null)return;const dx=e.changedTouches[0].clientX-tx;if(Math.abs(dx)>60)go(dx<0?1:-1);tx=null;});
+</script>
+</body>
+</html>
